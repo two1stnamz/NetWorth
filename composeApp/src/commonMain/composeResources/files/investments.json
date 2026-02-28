@@ -1,0 +1,12 @@
+[
+  { "name": "Vanguard Small Cap Index Adm", "symbol": "VSMAX", "quantity": 222.763663 },
+  { "name": "Vanguard Mid Cap Index Admiral", "symbol": "VIMAX", "quantity": 77.231861 },
+  { "name": "iShares S&P 500 Index K", "symbol": "WFSPX", "quantity": 35.152790 },
+  { "name": "iShares MSCI EAFE Intl Idx K", "symbol": "BTMKX", "quantity": 579.817768 },
+  { "name": "American Funds Eupac R6", "symbol": "RERGX", "quantity": 186.725049 },
+  { "name": "American Funds New World R6", "symbol": "RNWGX", "quantity": 106.304160 },
+  { "name": "American Funds New Perspective R6", "symbol": "RNPGX", "quantity": 138.992630 },
+  { "name": "PGIM High Yield R6", "symbol": "PHYQX", "quantity": 1168.507276 },
+  { "name": "Fidelity Advisor Total Bond Z", "symbol": "FBKWX", "quantity": 581.873584 },
+  { "name": "PIMCO Income Instl", "symbol": "PIMIX", "quantity": 256.932173 }
+]

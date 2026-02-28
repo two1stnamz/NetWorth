@@ -1,6 +1,7 @@
 package com.maroondevelopment.networth.domain.usecase
 
 import com.maroondevelopment.networth.domain.entity.Asset
+import com.maroondevelopment.networth.domain.entity.Quote
 import com.maroondevelopment.networth.domain.repository.HoldingsRepository
 import com.maroondevelopment.networth.domain.repository.QuoteRepository
 
@@ -12,6 +13,7 @@ class FetchAssetsUseCase(
     suspend operator fun invoke(): List<Asset> {
         val holdings = holdingsRepository.getHoldings()
         val assets = mutableListOf<Asset>()
+        val quoteCache = mutableMapOf<String, Quote>()
 
         for (holding in holdings) {
             val quote = quoteRepository.getQuote(holding.symbol)

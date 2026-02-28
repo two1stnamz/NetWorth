@@ -8,7 +8,7 @@ fun App() {
 
     MaterialTheme {
 
-
+        SnapshotView()
 
     }
 

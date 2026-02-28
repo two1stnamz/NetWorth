@@ -11,10 +11,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.maroondevelopment.networth.di.Factory
 
 @Composable
 @Preview
-fun SnapshotView() {
+fun SnapshotView(viewModel: SnapshotViewModel = Factory.snapshotViewModel()) {
+
+    viewModel.fetch()
 
     Column(
         modifier =

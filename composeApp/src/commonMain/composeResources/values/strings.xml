@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="quote_url">https://financialmodelingprep.com/stable/quote-short?symbol=%1$s&amp;apikey=9k3snnJt033yf5LsxiclwhxK5TKNhwZz</string>
+</resources>

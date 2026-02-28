@@ -2,14 +2,18 @@ package com.maroondevelopment.networth.data.repository
 
 import com.maroondevelopment.networth.domain.entity.Holding
 import com.maroondevelopment.networth.domain.repository.HoldingsRepository
+import kotlinx.serialization.json.Json
+import networth.composeapp.generated.resources.Res
 
 class HoldingsRepositoryImpl : HoldingsRepository {
 
     override suspend fun getHoldings(): List<Holding> {
-        return listOf(
-            Holding("AAPL", 10.0),
-            Holding("GOOGL", 5.0),
-            Holding("AMZN", 2.0)
-        )
+        val bytes = Res.readBytes("files/investments.json")
+
+        // 2. Convert bytes to a UTF-8 String
+        val jsonString = bytes.decodeToString()
+
+        // 3. Parse the string into your data class
+        return Json.decodeFromString<List<Holding>>(jsonString)
     }
 }
