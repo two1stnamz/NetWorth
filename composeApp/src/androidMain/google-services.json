@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "499169824710",
+    "project_id": "networth-58fe8",
+    "storage_bucket": "networth-58fe8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499169824710:android:7d3eaebd101e4bb2442cc7",
+        "android_client_info": {
+          "package_name": "com.maroondevelopment.networth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnpr76NmAXPw8KYEG8-ltgUWzStcJ5Vng"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

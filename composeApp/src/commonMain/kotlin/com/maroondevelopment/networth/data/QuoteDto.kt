@@ -1,8 +1,9 @@
 package com.maroondevelopment.networth.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class QuoteDto(
-    val name: String,
-    val symbol: String,
+    val ticker: String,
     val price: Double,
-    val change: Double,
 )
