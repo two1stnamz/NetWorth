@@ -16,7 +16,8 @@ class FetchAssetsUseCase(
         val quoteCache = mutableMapOf<String, Quote>()
 
         for (holding in holdings) {
-            val quote = quoteRepository.getQuote(holding.symbol)
+            val quote = quoteCache[holding.symbol] ?: quoteRepository.getQuote(holding.symbol)
+            quoteCache[holding.symbol] = quote
             val asset = Asset(
                 holding,
                 quote

@@ -1,8 +1,11 @@
 package com.maroondevelopment.networth.domain.entity
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Quote(
-    val name: String,
     val symbol: String,
-    val lastPrice: Double,
+    val price: Double,
     val change: Double,
+    val volume: Long
 )
