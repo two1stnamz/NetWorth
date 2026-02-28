@@ -1,0 +1,17 @@
+CREATE TABLE quote (
+    symbol TEXT NOT NULL PRIMARY KEY ,
+    price REAL NOT NULL
+);
+
+insert:
+INSERT INTO quote (symbol, price)
+VALUES (?, ?);
+
+selectAll:
+SELECT * FROM quote;
+
+selectBySymbol:
+SELECT * FROM quote WHERE symbol = ?;
+
+deleteBySymbol:
+DELETE FROM quote WHERE symbol = ?;

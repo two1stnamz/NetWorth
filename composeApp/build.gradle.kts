@@ -10,6 +10,14 @@ plugins {
     alias(libs.plugins.sqldelight)
 }
 
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("com.maroondevelopment.networth")
+        }
+    }
+}
+
 kotlin {
     androidTarget {
         compilerOptions {
