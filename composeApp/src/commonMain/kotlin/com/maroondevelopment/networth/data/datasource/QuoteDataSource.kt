@@ -13,6 +13,16 @@ interface QuoteDataSource {
     suspend fun getQuote(symbol: String): QuoteDto
 }
 
+class LocalQuoteDataSource : QuoteDataSource {
+
+    override suspend fun getQuote(symbol: String): QuoteDto {
+        return QuoteDto(
+            ticker = symbol,
+            price = 0.0
+        )
+    }
+}
+
 class RemoteQuoteDataSource : QuoteDataSource {
 
     private val json = Json {
