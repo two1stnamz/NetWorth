@@ -1,10 +1,14 @@
 package com.maroondevelopment.networth.presentation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.maroondevelopment.networth.di.Factory
 import com.maroondevelopment.networth.domain.entity.Portfolio
+import com.maroondevelopment.networth.presentation.components.AssetListItemView
 
 @Composable
 @Preview
@@ -65,6 +70,8 @@ private fun ErrorView() {
 @Composable
 private fun PortfolioView(portfolio: Portfolio) {
 
+    val state = rememberLazyListState()
+
     Column(
         modifier =
             Modifier
@@ -81,6 +88,18 @@ private fun PortfolioView(portfolio: Portfolio) {
             fontWeight = FontWeight.Bold
         )
 
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+
+            items(portfolio.assets) { item ->
+
+                AssetListItemView(asset = item)
+
+            }
+
+        }
     }
 
 }
