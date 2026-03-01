@@ -4,6 +4,7 @@ import com.maroondevelopment.networth.domain.entity.Asset
 import com.maroondevelopment.networth.domain.entity.Portfolio
 import com.maroondevelopment.networth.domain.repository.HoldingsRepository
 import com.maroondevelopment.networth.domain.repository.QuoteRepository
+import com.maroondevelopment.networth.util.roundTo2Decimals
 
 class FetchPortfolioUseCase(
     private val holdingsRepository: HoldingsRepository,
@@ -19,7 +20,7 @@ class FetchPortfolioUseCase(
 
                 val asset = Asset(
                     holding,
-                    value = quote.price * holding.quantity
+                    value = (quote.price * holding.quantity).roundTo2Decimals()
                 )
                 assets.add(asset)
             }
@@ -27,7 +28,7 @@ class FetchPortfolioUseCase(
 
         return Portfolio(
             assets = assets,
-            totalValue = assets.sumOf { it.value }
+            totalValue = assets.sumOf { it.value }.roundTo2Decimals()
         )
     }
 }
