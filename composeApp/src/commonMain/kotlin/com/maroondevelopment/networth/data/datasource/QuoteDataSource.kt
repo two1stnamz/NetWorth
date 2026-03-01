@@ -60,7 +60,7 @@ class RemoteQuoteDataSourceImpl : RemoteQuoteDataSource {
 
     override suspend fun getQuote(symbol: String): QuoteDto? {
         try {
-            val url = "https://stockinvest.us/api/v1/predictions/$symbol"
+            val url = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=$symbol&output=json"
             val response: HttpResponse = HttpFactory.httpClient.get(url)
 
             // 2. Check for success status (200-299)
