@@ -8,6 +8,10 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 interface LocalQuoteDataSource {
 
@@ -59,19 +63,28 @@ class RemoteQuoteDataSourceImpl : RemoteQuoteDataSource {
     }
 
     override suspend fun getQuote(symbol: String): QuoteDto? {
+        var quote: QuoteDto? = null
+
         try {
             val url = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=$symbol&output=json"
             val response: HttpResponse = HttpFactory.httpClient.get(url)
 
             // 2. Check for success status (200-299)
             if (response.status.isSuccess()) {
-                return json.decodeFromString<QuoteDto>(response.bodyAsText())
+                val jsonObject = json.parseToJsonElement(response.bodyAsText())
+                jsonObject.jsonObject["FormattedQuoteResult"]?.jsonObject?.get("FormattedQuote")?.jsonArray?.firstOrNull()?.jsonObject?.let { quoteJson ->
+                    quote = QuoteDto(
+                        ticker = quoteJson["symbol"]?.jsonPrimitive?.content ?: "",
+                        price = quoteJson["last"]?.jsonPrimitive?.doubleOrNull ?: 0.0
+                    )
+                }
             } else {
                 throw Exception("Failed to fetch quote: ${response.status}. Status code: ${response.status.value}, Response: ${response.bodyAsText()}")
             }
         } catch (t: Throwable) {
             println("[BENG][RemoteQuoteDataSource] getQuote() - EXCEPTION!!! ${t.message}")
-            return null
         }
+
+        return quote
     }
 }
