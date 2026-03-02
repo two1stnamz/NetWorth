@@ -99,6 +99,17 @@ private fun PortfolioView(portfolio: Portfolio) {
 
             }
 
+            // Footer
+            item {
+
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 35.dp),
+                    )
+
+            }
         }
     }
 
