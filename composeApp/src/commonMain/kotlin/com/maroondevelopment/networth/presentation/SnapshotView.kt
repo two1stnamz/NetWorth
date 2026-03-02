@@ -60,7 +60,7 @@ fun SnapshotView(viewModel: SnapshotViewModel = viewModel(factory = SnapshotView
     when (val state = stateUpdate.value) {
         is SnapshotUiState.Loading -> LoadingView()
         is SnapshotUiState.Error -> ErrorView()
-        is SnapshotUiState.Success -> PortfolioView(state.portfolio, viewModel)
+        is SnapshotUiState.Success -> PortfolioView(state.portfolio, onRefresh = { viewModel.refresh() })
     }
 }
 
@@ -93,7 +93,7 @@ private fun ErrorView() {
 @Composable
 private fun PortfolioView(
     portfolio: Portfolio,
-    viewModel: SnapshotViewModel) {
+    onRefresh: () -> Unit) {
 
     val state = rememberLazyListState()
 
@@ -125,7 +125,7 @@ private fun PortfolioView(
                 modifier =
                     Modifier
                         .size(45.dp)
-                        .clickable(onClick = { viewModel.refresh() }, role = Role.Button),
+                        .clickable(onClick = onRefresh, role = Role.Button),
                 painter = painterResource(Res.drawable.refresh),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.inversePrimary),
                 contentDescription = "Refresh",

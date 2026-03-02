@@ -1,5 +1,6 @@
 package com.maroondevelopment.networth.data.repository
 
+import com.maroondevelopment.networth.data.HoldingDto
 import com.maroondevelopment.networth.domain.entity.Holding
 import com.maroondevelopment.networth.domain.repository.HoldingsRepository
 import kotlinx.serialization.json.Json
@@ -14,6 +15,12 @@ class HoldingsRepositoryImpl : HoldingsRepository {
         val jsonString = bytes.decodeToString()
 
         // 3. Parse the string into your data class
-        return Json.decodeFromString<List<Holding>>(jsonString)
+        return Json.decodeFromString<List<HoldingDto>>(jsonString).map { dto ->
+            Holding(
+                name = dto.name,
+                symbol = dto.symbol,
+                quantity = dto.quantity,
+            )
+        }
     }
 }
