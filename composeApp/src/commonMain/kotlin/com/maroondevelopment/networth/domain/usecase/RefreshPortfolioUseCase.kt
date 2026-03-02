@@ -14,17 +14,17 @@ class RefreshPortfolioUseCase(
 
     suspend operator fun invoke(): Portfolio {
         val holdings = holdingsRepository.getHoldings()
+        val symbols = holdings.map { it.symbol }.toSet()
+        val quotes = quoteRepository.getQuotes(symbols, CachePolicy.REFRESH)
         val assets = mutableListOf<Asset>()
 
         for (holding in holdings) {
-            quoteRepository.getQuote(holding.symbol, CachePolicy.REFRESH)?.let { quote ->
-
-                val asset = Asset(
-                    holding,
-                    value = (quote.price * holding.quantity).roundTo2Decimals()
-                )
-                assets.add(asset)
-            }
+            val price = quotes[holding.symbol]?.price ?: 0.0
+            val asset = Asset(
+                holding,
+                value = (price * holding.quantity).roundTo2Decimals()
+            )
+            assets.add(asset)
         }
 
         return Portfolio(

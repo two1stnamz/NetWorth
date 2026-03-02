@@ -34,6 +34,18 @@ class QuoteRepositoryImpl(
         }
     }
 
+    override suspend fun getQuotes(
+        symbols: Set<String>,
+        policy: CachePolicy
+    ): Map<String, Quote?> {
+        return mutableMapOf<String, Quote?>().apply {
+            for (symbol in symbols) {
+                val quote = getQuote(symbol, policy)
+                this[symbol] = quote
+            }
+        }
+    }
+
     private fun QuoteDto.toEntity(): Quote {
         return Quote(
             symbol = this.ticker,
