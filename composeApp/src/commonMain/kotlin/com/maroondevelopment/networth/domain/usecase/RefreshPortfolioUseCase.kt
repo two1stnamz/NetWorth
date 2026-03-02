@@ -7,7 +7,7 @@ import com.maroondevelopment.networth.domain.repository.HoldingsRepository
 import com.maroondevelopment.networth.domain.repository.QuoteRepository
 import com.maroondevelopment.networth.util.roundTo2Decimals
 
-class FetchPortfolioUseCase(
+class RefreshPortfolioUseCase(
     private val holdingsRepository: HoldingsRepository,
     private val quoteRepository: QuoteRepository
 ) {
@@ -17,7 +17,7 @@ class FetchPortfolioUseCase(
         val assets = mutableListOf<Asset>()
 
         for (holding in holdings) {
-            quoteRepository.getQuote(holding.symbol, CachePolicy.PREFER_CACHE)?.let { quote ->
+            quoteRepository.getQuote(holding.symbol, CachePolicy.REFRESH)?.let { quote ->
 
                 val asset = Asset(
                     holding,
