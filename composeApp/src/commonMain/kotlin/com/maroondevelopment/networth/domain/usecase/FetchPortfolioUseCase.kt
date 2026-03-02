@@ -12,19 +12,19 @@ class FetchPortfolioUseCase(
     private val quoteRepository: QuoteRepository
 ) {
 
-    suspend operator fun invoke(): Portfolio {
+    suspend operator fun invoke(cachePolicy: CachePolicy): Portfolio {
         val holdings = holdingsRepository.getHoldings()
+        val symbols = holdings.map { it.symbol }.toSet()
+        val quotes = quoteRepository.getQuotes(symbols, cachePolicy)
         val assets = mutableListOf<Asset>()
 
         for (holding in holdings) {
-            quoteRepository.getQuote(holding.symbol, CachePolicy.PREFER_CACHE)?.let { quote ->
-
-                val asset = Asset(
-                    holding,
-                    value = (quote.price * holding.quantity).roundTo2Decimals()
-                )
-                assets.add(asset)
-            }
+            val price = quotes[holding.symbol]?.price ?: 0.0
+            val asset = Asset(
+                holding,
+                value = (price * holding.quantity).roundTo2Decimals()
+            )
+            assets.add(asset)
         }
 
         return Portfolio(

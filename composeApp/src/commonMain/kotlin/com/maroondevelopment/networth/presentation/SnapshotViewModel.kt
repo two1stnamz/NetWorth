@@ -2,9 +2,9 @@ package com.maroondevelopment.networth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.maroondevelopment.networth.domain.entity.CachePolicy
 import com.maroondevelopment.networth.domain.entity.Portfolio
 import com.maroondevelopment.networth.domain.usecase.FetchPortfolioUseCase
-import com.maroondevelopment.networth.domain.usecase.RefreshPortfolioUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -16,8 +16,7 @@ sealed interface SnapshotUiState {
 }
 
 class SnapshotViewModel(
-    private val fetchPortfolioUseCase: FetchPortfolioUseCase,
-    private val refreshPortfolioUseCase: RefreshPortfolioUseCase
+    private val fetchPortfolioUseCase: FetchPortfolioUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SnapshotUiState>(SnapshotUiState.Loading)
@@ -26,7 +25,7 @@ class SnapshotViewModel(
 
     fun fetch() {
         viewModelScope.launch {
-            val portfolio = fetchPortfolioUseCase()
+            val portfolio = fetchPortfolioUseCase(cachePolicy = CachePolicy.PREFER_CACHE)
             _uiState.value = SnapshotUiState.Success(portfolio)
         }
     }
@@ -35,7 +34,7 @@ class SnapshotViewModel(
         viewModelScope.launch {
             _uiState.value = SnapshotUiState.Loading
 
-            val portfolio = refreshPortfolioUseCase()
+            val portfolio = fetchPortfolioUseCase(cachePolicy = CachePolicy.REFRESH)
             _uiState.value = SnapshotUiState.Success(portfolio)
         }
     }
