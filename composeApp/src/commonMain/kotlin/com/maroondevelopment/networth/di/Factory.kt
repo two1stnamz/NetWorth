@@ -2,6 +2,7 @@ package com.maroondevelopment.networth.di
 
 import com.maroondevelopment.networth.Database
 import com.maroondevelopment.networth.data.datasource.LocalQuoteDataSourceImpl
+import com.maroondevelopment.networth.data.datasource.RemoteQuoteDataSourceImpl
 import com.maroondevelopment.networth.data.repository.HoldingsRepositoryImpl
 import com.maroondevelopment.networth.data.repository.QuoteRepositoryImpl
 import com.maroondevelopment.networth.domain.repository.HoldingsRepository
@@ -30,6 +31,7 @@ object Factory {
 
     private fun quoteRepository(): QuoteRepository =
         QuoteRepositoryImpl(
+            remoteDataSource = RemoteQuoteDataSourceImpl(),
             localDataSource = LocalQuoteDataSourceImpl(database)
         )
 }
