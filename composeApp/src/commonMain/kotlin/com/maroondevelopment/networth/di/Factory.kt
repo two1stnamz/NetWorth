@@ -7,6 +7,7 @@ import com.maroondevelopment.networth.data.repository.QuoteRepositoryImpl
 import com.maroondevelopment.networth.domain.repository.HoldingsRepository
 import com.maroondevelopment.networth.domain.repository.QuoteRepository
 import com.maroondevelopment.networth.domain.usecase.FetchPortfolioUseCase
+import com.maroondevelopment.networth.domain.usecase.RefreshPortfolioUseCase
 import com.maroondevelopment.networth.persistence.DriverFactory
 import com.maroondevelopment.networth.persistence.createDatabase
 import com.maroondevelopment.networth.presentation.SnapshotViewModel
@@ -20,11 +21,15 @@ object Factory {
     }
 
     fun snapshotViewModel() = SnapshotViewModel(
-        fetchPortfolioUseCase = fetchPortfolioUseCase()
+        fetchPortfolioUseCase = fetchPortfolioUseCase(),
+        refreshPortfolioUseCase = refreshPortfolioUseCase()
     )
 
     private fun fetchPortfolioUseCase(): FetchPortfolioUseCase =
         FetchPortfolioUseCase(holdingsRepository(), quoteRepository())
+
+    private fun refreshPortfolioUseCase(): RefreshPortfolioUseCase =
+        RefreshPortfolioUseCase(holdingsRepository(), quoteRepository())
 
     private fun holdingsRepository(): HoldingsRepository = HoldingsRepositoryImpl()
 
