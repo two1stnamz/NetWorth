@@ -23,6 +23,8 @@ interface LocalQuoteDataSource {
 interface RemoteQuoteDataSource {
 
     suspend fun getQuote(symbol: String): QuoteDto?
+
+    suspend fun getQuotes(symbols: Set<String>): Map<String, QuoteDto?>
 }
 
 class LocalQuoteDataSourceImpl(
@@ -63,28 +65,33 @@ class RemoteQuoteDataSourceImpl : RemoteQuoteDataSource {
     }
 
     override suspend fun getQuote(symbol: String): QuoteDto? {
-        var quote: QuoteDto? = null
+        return getQuotes(setOf(symbol))[symbol]
+    }
+
+    override suspend fun getQuotes(symbols: Set<String>): Map<String, QuoteDto?> {
+        val result = mutableMapOf<String, QuoteDto?>().apply { symbols.forEach { this[it] = null } }
 
         try {
-            val url = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=$symbol&output=json"
+            val symbolList = symbols.joinToString("|")
+            val url = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=$symbolList&output=json"
             val response: HttpResponse = HttpFactory.httpClient.get(url)
 
-            // 2. Check for success status (200-299)
             if (response.status.isSuccess()) {
                 val jsonObject = json.parseToJsonElement(response.bodyAsText())
-                jsonObject.jsonObject["FormattedQuoteResult"]?.jsonObject?.get("FormattedQuote")?.jsonArray?.firstOrNull()?.jsonObject?.let { quoteJson ->
-                    quote = QuoteDto(
-                        ticker = quoteJson["symbol"]?.jsonPrimitive?.content ?: "",
-                        price = quoteJson["last"]?.jsonPrimitive?.doubleOrNull ?: 0.0
-                    )
+                jsonObject.jsonObject["FormattedQuoteResult"]?.jsonObject?.get("FormattedQuote")?.jsonArray?.forEach { element ->
+                    element.jsonObject.let { quoteJson ->
+                        val symbol = quoteJson["symbol"]?.jsonPrimitive?.content ?: return@let
+                        val price = quoteJson["last"]?.jsonPrimitive?.doubleOrNull ?: 0.0
+                        result[symbol] = QuoteDto(ticker = symbol, price = price)
+                    }
                 }
             } else {
-                throw Exception("Failed to fetch quote: ${response.status}. Status code: ${response.status.value}, Response: ${response.bodyAsText()}")
+                throw Exception("Failed to fetch quotes: ${response.status.value}")
             }
         } catch (t: Throwable) {
-            println("[BENG][RemoteQuoteDataSource] getQuote() - EXCEPTION!!! ${t.message}")
+            println("[BENG][RemoteQuoteDataSource] getQuotes() - EXCEPTION!!! ${t.message}")
         }
 
-        return quote
+        return result
     }
 }

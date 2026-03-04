@@ -37,10 +37,38 @@ class QuoteRepositoryImpl(
         symbols: Set<String>,
         policy: CachePolicy
     ): Map<String, Quote?> {
-        return mutableMapOf<String, Quote?>().apply {
-            for (symbol in symbols) {
-                val quote = getQuote(symbol, policy)
-                this[symbol] = quote
+        return when (policy) {
+            CachePolicy.PREFER_CACHE -> {
+                val result = mutableMapOf<String, Quote?>()
+                val cacheMisses = mutableSetOf<String>()
+
+                for (symbol in symbols) {
+                    val cached = localDataSource.getQuote(symbol)
+                    if (cached != null) {
+                        result[symbol] = cached.toEntity()
+                    } else {
+                        cacheMisses.add(symbol)
+                    }
+                }
+
+                if (cacheMisses.isNotEmpty()) {
+                    remoteDataSource.getQuotes(cacheMisses).forEach { (symbol, dto) ->
+                        result[symbol] = dto?.toEntity()?.also {
+                            localDataSource.storeQuote(QuoteDto(symbol, it.price))
+                        }
+                    }
+                }
+
+                result
+            }
+            CachePolicy.REFRESH -> {
+                val result = mutableMapOf<String, Quote?>()
+                remoteDataSource.getQuotes(symbols).forEach { (symbol, dto) ->
+                    result[symbol] = dto?.toEntity()?.also {
+                        localDataSource.storeQuote(QuoteDto(symbol, it.price))
+                    }
+                }
+                result
             }
         }
     }
