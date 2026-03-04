@@ -27,25 +27,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.maroondevelopment.networth.di.Factory
+import com.maroondevelopment.networth.di.SnapshotViewModelFactory
 import com.maroondevelopment.networth.domain.entity.Portfolio
 import com.maroondevelopment.networth.presentation.components.AssetListItemView
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.painterResource
-import kotlin.reflect.KClass
-
-class SnapshotViewModelFactory : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-        return Factory.snapshotViewModel() as T
-    }
-
-}
 
 @Composable
 @Preview

@@ -10,7 +10,6 @@ import com.maroondevelopment.networth.domain.repository.QuoteRepository
 import com.maroondevelopment.networth.domain.usecase.FetchPortfolioUseCase
 import com.maroondevelopment.networth.persistence.DriverFactory
 import com.maroondevelopment.networth.persistence.createDatabase
-import com.maroondevelopment.networth.presentation.SnapshotViewModel
 
 object Factory {
 
@@ -20,11 +19,7 @@ object Factory {
         this.database = createDatabase(driverFactory)
     }
 
-    fun snapshotViewModel() = SnapshotViewModel(
-        fetchPortfolioUseCase = fetchPortfolioUseCase()
-    )
-
-    private fun fetchPortfolioUseCase(): FetchPortfolioUseCase =
+    fun fetchPortfolioUseCase(): FetchPortfolioUseCase =
         FetchPortfolioUseCase(holdingsRepository(), quoteRepository())
 
     private fun holdingsRepository(): HoldingsRepository = HoldingsRepositoryImpl()
