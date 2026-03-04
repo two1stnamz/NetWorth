@@ -3,8 +3,8 @@ CREATE TABLE quote (
     price REAL NOT NULL
 );
 
-insert:
-INSERT INTO quote (symbol, price)
+insertOrReplace:
+INSERT OR REPLACE INTO quote (symbol, price)
 VALUES (?, ?);
 
 selectAll:

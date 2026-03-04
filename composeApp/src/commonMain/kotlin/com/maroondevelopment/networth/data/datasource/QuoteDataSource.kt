@@ -50,8 +50,7 @@ class LocalQuoteDataSourceImpl(
 
     override suspend fun storeQuote(quote: QuoteDto) {
         try {
-            database.quoteQueries.deleteBySymbol(quote.ticker)
-            database.quoteQueries.insert(quote.ticker, quote.price)
+            database.quoteQueries.insertOrReplace(quote.ticker, quote.price)
         } catch (t: Throwable) {
             println("[BENG][LocalQuoteDataSource] storeQuote() - EXCEPTION!!! ${t.message}")
         }
