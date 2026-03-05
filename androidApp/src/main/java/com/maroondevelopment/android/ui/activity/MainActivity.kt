@@ -1,4 +1,4 @@
-package com.maroondevelopment.networth
+package com.maroondevelopment.android.ui.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

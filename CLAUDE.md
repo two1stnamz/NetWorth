@@ -10,19 +10,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build Android debug APK
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 
 # Build Android release APK
-./gradlew :composeApp:assembleRelease
+./gradlew :androidApp:assembleRelease
 
 # Run all unit tests (commonTest)
-./gradlew :composeApp:testDebugUnitTest
+./gradlew :composeApp:testCommonUnitTest
 
 # Run a single test class
-./gradlew :composeApp:testDebugUnitTest --tests "com.maroondevelopment.networth.ComposeAppCommonTest"
+./gradlew :composeApp:testCommonUnitTest --tests "com.maroondevelopment.networth.ComposeAppCommonTest"
 
 # Android lint
-./gradlew :composeApp:lint
+./gradlew :androidApp:lint
 
 # Clean build outputs
 ./gradlew clean
@@ -56,17 +56,26 @@ Presentation  →  Domain  →  Data  →  Network/DB
 | Serialization | Kotlinx Serialization 1.10.0 |
 | DI | Manual factory (`di/Factory.kt`) — no Hilt/Koin |
 | ViewModel | `androidx.lifecycle:lifecycle-viewmodel-compose` |
+| Android Build | AGP 9.1.0, Gradle 9.3.1, KMP library plugin (`com.android.kotlin.multiplatform.library`) |
 
 ## Source Set Layout
 
 ```
+androidApp/src/main/          # Android application entry point
+├── java/com/maroondevelopment/
+│   ├── App.kt               # Application class
+│   └── networth/
+│       └── MainActivity.kt
+├── AndroidManifest.xml
+└── res/                     # Launcher icons, strings
+
 composeApp/src/
-├── commonMain/          # All shared business logic, UI, and domain code
+├── commonMain/              # All shared business logic, UI, and domain code
 │   ├── kotlin/com/maroondevelopment/networth/
-│   └── sqldelight/      # .sq schema files (Quote table)
-│   └── composeResources/files/investments.json  # Static holdings data
-├── androidMain/         # Android entry point (App.kt, MainActivity, DriverFactory)
-└── iosMain/             # iOS DriverFactory implementation
+│   └── sqldelight/          # .sq schema files (Quote table)
+│   └── composeResources/files/investments.json
+├── androidMain/             # Android actual implementations (DriverFactory)
+└── iosMain/                 # iOS DriverFactory + MainViewController
 ```
 
 ## Data Flow
@@ -82,4 +91,4 @@ composeApp/src/
 ## Dependency Versions
 
 All versions are centrally managed in `gradle/libs.versions.toml`. Key versions:
-- Kotlin: 2.3.10, AGP: 8.11.2, compileSdk/targetSdk: 36, minSdk: 30, JVM target: 11
+- Kotlin: 2.3.10, AGP: 9.1.0, Gradle: 9.3.1, compileSdk/targetSdk: 36, minSdk: 30, JVM target: 11
