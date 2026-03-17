@@ -1,29 +1,137 @@
 [
-  { "name": "Vanguard Small Cap Index Adm", "symbol": "VSMAX", "quantity": 223.435209 },
-  { "name": "Vanguard Mid Cap Index Admiral", "symbol": "VIMAX", "quantity": 77.469031 },
-  { "name": "iShares S&P 500 Index K", "symbol": "WFSPX", "quantity": 35.263344 },
-  { "name": "iShares MSCI EAFE Intl Idx K", "symbol": "BTMKX", "quantity": 581.495686 },
-  { "name": "American Funds Eupac R6", "symbol": "RERGX", "quantity": 187.271628 },
-  { "name": "American Funds New World R6", "symbol": "RNWGX", "quantity": 106.608643 },
-  { "name": "American Funds New Perspective R6", "symbol": "RNPGX", "quantity": 139.423204 },
-  { "name": "PGIM High Yield R6", "symbol": "PHYQX", "quantity": 1172.188346 },
-  { "name": "Fidelity Advisor Total Bond Z", "symbol": "FBKWX", "quantity": 583.710340 },
-  { "name": "PIMCO Income Instl", "symbol": "PIMIX", "quantity": 257.740665 },
-  { "name": "Fidelity Total Market Index Fund", "symbol": "FSKAX", "quantity": 8.907 },
-  { "name": "Fidelity Total Intl Index Fund", "symbol": "FTIHX", "quantity": 27.957 },
-  { "name": "Fidelity Total Market Index Fund", "symbol": "FSKAX", "quantity": 248.065 },
-  { "name": "Fidelity Total Intl Index Fund", "symbol": "FTIHX", "quantity": 1080.346 },
-  { "name": "Fidelity U.S. Bond Index Fund", "symbol": "FXNAX", "quantity": 1101.191 },
-  { "name": "Fidelity Total Market Index Fund", "symbol": "FSKAX", "quantity": 706.623 },
-  { "name": "Fidelity Total Intl Index Fund", "symbol": "FTIHX", "quantity": 3075.006 },
-  { "name": "Fidelity U.S. Bond Index Fund", "symbol": "FXNAX", "quantity": 3136.007 },
-  { "name": "Fidelity Total Market Index Fund", "symbol": "FSKAX", "quantity": 871.083 },
-  { "name": "Fidelity Total Intl Index Fund", "symbol": "FTIHX", "quantity": 3794.109 },
-  { "name": "Fidelity U.S. Bond Index Fund", "symbol": "FXNAX", "quantity": 3866.881 },
-  {"name": "FIRST TRUST VALUE LINE DIVIDEND INDEX FUND", "symbol": "FVD", "quantity": 1170.952},
-  {"name": "NUVEEN MUNICIPAL CREDIT INCOME FUND", "symbol": "NZF", "quantity": 4.995},
-  {"name": "PULTE GROUP INCORPORATED", "symbol": "PHM", "quantity": 756.622 },
-  {"name": "VANGUARD DIVIDEND GROWTH FUND INVESTOR CL N/L", "symbol": "VDIGX", "quantity": 603.757},
-  {"name": "VANGUARD TOTAL STOCK MARKET INDEX FUND ADMIRAL SHARES N/L", "symbol": "VTSAX", "quantity": 149.797},
-  {"name": "VERIZON COMMUNICATIONS INCORPORATED", "symbol": "VZ", "quantity": 147.169}
+  {
+    "name": "Vanguard Small Cap Index Adm",
+    "symbol": "VSMAX",
+    "quantity": 235.685654
+  },
+  {
+    "name": "Vanguard Mid Cap Index Admiral",
+    "symbol": "VIMAX",
+    "quantity": 81.736908
+  },
+  {
+    "name": "iShares S&P 500 Index K",
+    "symbol": "WFSPX",
+    "quantity": 37.250848
+  },
+  {
+    "name": "iShares MSCI EAFE Intl Idx K",
+    "symbol": "BTMKX",
+    "quantity": 612.949219
+  },
+  {
+    "name": "American Funds Eupac R6",
+    "symbol": "RERGX",
+    "quantity": 197.649985
+  },
+  {
+    "name": "American Funds New World R6",
+    "symbol": "RNWGX",
+    "quantity": 112.400729
+  },
+  {
+    "name": "American Funds New Perspective R6",
+    "symbol": "RNPGX",
+    "quantity": 147.293937
+  },
+  {
+    "name": "PGIM High Yield R6",
+    "symbol": "PHYQX",
+    "quantity": 1243.550358
+  },
+  {
+    "name": "Fidelity Advisor Total Bond Z",
+    "symbol": "FBKWX",
+    "quantity": 618.104146
+  },
+  {
+    "name": "PIMCO Income Instl",
+    "symbol": "PIMIX",
+    "quantity": 273.242156
+  },
+  {
+    "symbol": "FSKAX",
+    "name": "Fidelity Total Market Index Fund",
+    "quantity": 10.232
+  },
+  {
+    "symbol": "FTIHX",
+    "name": "Fidelity Total Intl Index Fund",
+    "quantity": 42.495
+  },
+  {
+    "symbol": "FSKAX",
+    "name": "Fidelity Total Market Index Fund",
+    "quantity": 273.017
+  },
+  {
+    "symbol": "FTIHX",
+    "name": "Fidelity Total Intl Index Fund",
+    "quantity": 1178.535
+  },
+  {
+    "symbol": "FXNAX",
+    "name": "Fidelity U.S. Bond Index Fund",
+    "quantity": 1211.055
+  },
+  {
+    "symbol": "FSKAX",
+    "name": "Fidelity Total Market Index Fund",
+    "quantity": 706.623
+  },
+  {
+    "symbol": "FTIHX",
+    "name": "Fidelity Total Intl Index Fund",
+    "quantity": 3075.006
+  },
+  {
+    "symbol": "FXNAX",
+    "name": "Fidelity U.S. Bond Index Fund",
+    "quantity": 3144.99
+  },
+  {
+    "symbol": "FSKAX",
+    "name": "Fidelity Total Market Index Fund",
+    "quantity": 871.083
+  },
+  {
+    "symbol": "FTIHX",
+    "name": "Fidelity Total Intl Index Fund",
+    "quantity": 3794.109
+  },
+  {
+    "symbol": "FXNAX",
+    "name": "Fidelity U.S. Bond Index Fund",
+    "quantity": 3877.958
+  },
+  {
+    "name": "FIRST TRUST VALUE LINE DIVIDEND INDEX FUND",
+    "symbol": "FVD",
+    "quantity": 1170.952
+  },
+  {
+    "name": "NUVEEN MUNICIPAL CREDIT INCOME FUND",
+    "symbol": "NZF",
+    "quantity": 4.995
+  },
+  {
+    "name": "PULTE GROUP INCORPORATED",
+    "symbol": "PHM",
+    "quantity": 756.622
+  },
+  {
+    "name": "VANGUARD DIVIDEND GROWTH FUND INVESTOR CL N/L",
+    "symbol": "VDIGX",
+    "quantity": 603.757
+  },
+  {
+    "name": "VANGUARD TOTAL STOCK MARKET INDEX FUND ADMIRAL SHARES N/L",
+    "symbol": "VTSAX",
+    "quantity": 149.797
+  },
+  {
+    "name": "VERIZON COMMUNICATIONS INCORPORATED",
+    "symbol": "VZ",
+    "quantity": 147.169
+  }
 ]
