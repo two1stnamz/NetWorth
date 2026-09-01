@@ -64,6 +64,8 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            // Navigation
+            implementation(libs.navigation.compose)
             // Kotlinx Serialization (Multiplatform)
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.kotlinx.serialization.json)
