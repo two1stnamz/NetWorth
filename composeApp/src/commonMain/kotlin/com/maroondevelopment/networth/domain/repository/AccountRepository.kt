@@ -1,6 +1,6 @@
 package com.maroondevelopment.networth.domain.repository
 
-import com.maroondevelopment.networth.domain.entity.Account
+import com.maroondevelopment.networth.domain.entity.v2.Account
 
 interface AccountRepository {
 

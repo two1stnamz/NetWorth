@@ -1,9 +1,9 @@
 package com.maroondevelopment.networth.domain.repository
 
-import com.maroondevelopment.networth.domain.entity.NewPosition
-import com.maroondevelopment.networth.domain.entity.Position
+import com.maroondevelopment.networth.domain.entity.v2.NewPosition
+import com.maroondevelopment.networth.domain.entity.v2.Position
 
-interface PositionsRepository {
+interface PositionRepository {
 
     suspend fun getPositionsForAccount(accountId: String): List<Position>
 
