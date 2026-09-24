@@ -3,6 +3,6 @@ package com.maroondevelopment.networth.presentation.model
 data class PositionUiModel(
     val ticker: String,
     val name: String,
-    val positions: Double,
+    val units: Double,
     val value: Double
 )
