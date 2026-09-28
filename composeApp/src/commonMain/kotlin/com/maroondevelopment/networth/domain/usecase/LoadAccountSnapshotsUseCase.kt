@@ -8,16 +8,16 @@ import com.maroondevelopment.networth.domain.repository.AccountRepository
 import com.maroondevelopment.networth.domain.repository.PositionRepository
 import com.maroondevelopment.networth.domain.repository.QuoteRepository
 
-interface LoadPortfolioUseCase {
+interface LoadAccountSnapshotsUseCase {
 
     suspend operator fun invoke(policy: CachePolicy): LoadPortfolioOutcome
 }
 
-class LoadPortfolioUseCaseImpl(
+class LoadAccountSnapshotsUseCaseImpl(
     private val accountRepository: AccountRepository,
     private val positionRepository: PositionRepository,
     private val quoteRepository: QuoteRepository
-): LoadPortfolioUseCase {
+): LoadAccountSnapshotsUseCase {
 
     override suspend fun invoke(policy: CachePolicy): LoadPortfolioOutcome {
         val accounts = accountRepository.fetchAccounts()
