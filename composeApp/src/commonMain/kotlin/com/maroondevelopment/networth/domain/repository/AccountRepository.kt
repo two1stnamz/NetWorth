@@ -4,6 +4,8 @@ import com.maroondevelopment.networth.domain.entity.v2.Account
 
 interface AccountRepository {
 
+    suspend fun getAccount(accountId: String): Account
+
     suspend fun fetchAccounts(): List<Account>
 
     suspend fun createAccount(name: String): Account

@@ -8,34 +8,22 @@ import com.maroondevelopment.networth.domain.repository.AccountRepository
 import com.maroondevelopment.networth.domain.repository.PositionRepository
 import com.maroondevelopment.networth.domain.repository.QuoteRepository
 
-interface LoadAccountSnapshotsUseCase {
+interface LoadPortfolioUseCase {
 
     suspend operator fun invoke(policy: CachePolicy): LoadPortfolioOutcome
 }
 
-class LoadAccountSnapshotsUseCaseImpl(
+class LoadPortfolioUseCaseImpl(
     private val accountRepository: AccountRepository,
-    private val positionRepository: PositionRepository,
-    private val quoteRepository: QuoteRepository
-): LoadAccountSnapshotsUseCase {
+    private val loadAccountSnapshot: LoadAccountSnapshotUseCase
+): LoadPortfolioUseCase {
 
     override suspend fun invoke(policy: CachePolicy): LoadPortfolioOutcome {
         val accounts = accountRepository.fetchAccounts()
         val snapshots = mutableListOf<AccountSnapshot>()
 
-        accounts.forEach { it ->
-            val positions = positionRepository.getPositionsForAccount(it.id)
-            val tickers = positions.mapTo(mutableSetOf()) { it.ticker }
-            val quotes = quoteRepository.getQuotes(tickers, CachePolicy.PREFER_CACHE)
-            val assets = mutableListOf<Asset>()
-
-            positions.forEach { position ->
-                quotes[position.ticker]?.let {
-                    assets.add(Asset(position, it))
-                }
-            }
-
-            snapshots.add(AccountSnapshot(it, assets))
+        accounts.forEach {
+            snapshots.add(loadAccountSnapshot(it.id, policy))
         }
 
         return LoadPortfolioOutcome.Success(snapshots)
