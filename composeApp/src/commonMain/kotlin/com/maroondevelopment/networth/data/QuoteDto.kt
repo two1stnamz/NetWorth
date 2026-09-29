@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class QuoteDto(
     val ticker: String,
     val price: Double,
+    val change: Double
 )

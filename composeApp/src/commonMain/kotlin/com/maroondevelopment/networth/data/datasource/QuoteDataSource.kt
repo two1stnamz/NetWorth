@@ -38,7 +38,8 @@ class LocalQuoteDataSourceImpl(
             database.quoteQueries.selectBySymbol(symbol).executeAsOne().apply {
                 quote = QuoteDto(
                     ticker = this.symbol,
-                    price = this.price
+                    price = this.price,
+                    change = this.change
                 )
             }
         } catch (t: Throwable) {
@@ -50,7 +51,7 @@ class LocalQuoteDataSourceImpl(
 
     override suspend fun storeQuote(quote: QuoteDto) {
         try {
-            database.quoteQueries.insertOrReplace(quote.ticker, quote.price)
+            database.quoteQueries.insertOrReplace(quote.ticker, quote.price, quote.change)
         } catch (t: Throwable) {
             println("[BENG][LocalQuoteDataSource] storeQuote() - EXCEPTION!!! ${t.message}")
         }
@@ -81,7 +82,8 @@ class RemoteQuoteDataSourceImpl : RemoteQuoteDataSource {
                     element.jsonObject.let { quoteJson ->
                         val symbol = quoteJson["symbol"]?.jsonPrimitive?.content ?: return@let
                         val price = quoteJson["last"]?.jsonPrimitive?.doubleOrNull ?: 0.0
-                        result[symbol] = QuoteDto(ticker = symbol, price = price)
+                        val change = quoteJson["change"]?.jsonPrimitive?.doubleOrNull ?: 0.0
+                        result[symbol] = QuoteDto(ticker = symbol, price = price, change = change)
                     }
                 }
             } else {

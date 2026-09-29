@@ -19,13 +19,13 @@ class QuoteRepositoryImpl(
 
                 return quoteDto?.toEntity()
                     ?: remoteDataSource.getQuote(symbol)?.toEntity()?.also {
-                        localDataSource.storeQuote(QuoteDto(symbol, it.price))
+                        localDataSource.storeQuote(QuoteDto(symbol, it.price, it.valueChange))
                     }
             }
             CachePolicy.REFRESH -> {
                 val quoteDto = remoteDataSource.getQuote(symbol)
                 val quote = quoteDto?.toEntity()?.also {
-                    localDataSource.storeQuote(QuoteDto(symbol, it.price))
+                    localDataSource.storeQuote(QuoteDto(symbol, it.price, it.valueChange))
                 }
 
                 return quote
@@ -54,7 +54,7 @@ class QuoteRepositoryImpl(
                 if (cacheMisses.isNotEmpty()) {
                     remoteDataSource.getQuotes(cacheMisses).forEach { (symbol, dto) ->
                         result[symbol] = dto?.toEntity()?.also {
-                            localDataSource.storeQuote(QuoteDto(symbol, it.price))
+                            localDataSource.storeQuote(QuoteDto(symbol, it.price, it.valueChange))
                         }
                     }
                 }
@@ -65,7 +65,7 @@ class QuoteRepositoryImpl(
                 val result = mutableMapOf<String, Quote?>()
                 remoteDataSource.getQuotes(symbols).forEach { (symbol, dto) ->
                     result[symbol] = dto?.toEntity()?.also {
-                        localDataSource.storeQuote(QuoteDto(symbol, it.price))
+                        localDataSource.storeQuote(QuoteDto(symbol, it.price, it.valueChange))
                     }
                 }
                 result
