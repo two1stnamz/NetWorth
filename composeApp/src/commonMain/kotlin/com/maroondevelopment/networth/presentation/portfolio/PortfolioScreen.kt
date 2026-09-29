@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,17 +31,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.maroondevelopment.networth.presentation.model.PortfolioUiModel
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.add
 import networth.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PortfolioScreen(
-    viewModel: PortfolioViewModel = viewModel()
+    viewModel: PortfolioViewModel = koinViewModel()
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.load()
+    }
 
     when (val uiStateUpdate = viewModel.flow.collectAsState().value) {
         PortfolioUiState.Error -> ErrorView()

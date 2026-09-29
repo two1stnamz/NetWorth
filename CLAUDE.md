@@ -15,11 +15,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Build Android release APK
 ./gradlew :androidApp:assembleRelease
 
-# Run all unit tests (commonTest)
-./gradlew :composeApp:testCommonUnitTest
+# Run all unit tests (commonTest, via the iOS simulator target)
+./gradlew :composeApp:iosSimulatorArm64Test
 
-# Run a single test class
-./gradlew :composeApp:testCommonUnitTest --tests "com.maroondevelopment.networth.ComposeAppCommonTest"
+# Run tests for every target
+./gradlew :composeApp:allTests
 
 # Android lint
 ./gradlew :androidApp:lint
@@ -44,7 +44,7 @@ Presentation  →  Domain  →  Data  →  Network/DB
 - **`data/repository/`** — Repository implementations that wire data sources to domain interfaces
 - **`data/datasource/QuoteDataSource`** — Two implementations: `LocalQuoteDataSourceImpl` (SQLDelight cache) and `RemoteQuoteDataSourceImpl` (CNBC HTTP)
 - **`presentation/`** — `SnapshotViewModel` + `SnapshotView` (Compose UI) + `App.kt` (root composable)
-- **`di/Factory.kt`** — Manual service locator; call `Factory.initialize(DriverFactory())` at app startup
+- **`di/AppModule.kt`** — The single Koin module (`appModule(driverFactory)`); `di/Koin.kt` exposes `initKoin(driverFactory)`, called once per platform at startup
 
 ## Key Tech Stack
 
@@ -54,7 +54,7 @@ Presentation  →  Domain  →  Data  →  Network/DB
 | Networking | Ktor Client 2.3.0 (OkHttp on Android, Darwin on iOS) |
 | Database | SQLDelight 2.2.1 — single `Quote` table (symbol PK, price) |
 | Serialization | Kotlinx Serialization 1.10.0 |
-| DI | Manual factory (`di/Factory.kt`) — no Hilt/Koin |
+| DI | Koin 4.1.0 (`koin-core`, `koin-compose`, `koin-compose-viewmodel`, `koin-android`) |
 | ViewModel | `androidx.lifecycle:lifecycle-viewmodel-compose` |
 | Android Build | AGP 9.1.0, Gradle 9.3.1, KMP library plugin (`com.android.kotlin.multiplatform.library`) |
 
@@ -80,8 +80,8 @@ composeApp/src/
 
 ## Data Flow
 
-1. `MainActivity` → `App` composable → `Factory.initialize(DriverFactory())`
-2. `SnapshotView` observes `SnapshotViewModel.uiState`
+1. `App` (Android `Application`) / `iOSApp` calls `initKoin(DriverFactory(...))`; `MainActivity` → `App2` composable
+2. Screens obtain their view model with `koinViewModel()`
 3. ViewModel calls `FetchPortfolioUseCase`:
    - Reads holdings from `investments.json` via `HoldingsRepositoryImpl`
    - Fetches quotes via `QuoteRepositoryImpl` using `CachePolicy.PREFER_CACHE` (local SQLDelight first, remote CNBC fallback) or `CachePolicy.REFRESH` (always remote)

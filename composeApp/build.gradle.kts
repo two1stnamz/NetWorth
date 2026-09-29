@@ -48,6 +48,8 @@ kotlin {
             implementation(libs.ktor.client.android)
             // SQLDelight Android Driver
             implementation(libs.sqldelight.android.driver)
+            // Koin Android
+            implementation(libs.koin.android)
         }
         iosMain.dependencies {
             // Ktor Client Darwin (iOS)
@@ -75,6 +77,10 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             // SQLDelight (Multiplatform)
             implementation(libs.sqldelight.runtime)
+            // Koin (Multiplatform)
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

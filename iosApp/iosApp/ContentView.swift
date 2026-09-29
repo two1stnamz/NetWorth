@@ -4,9 +4,7 @@ import ComposeApp
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        Factory.shared.initialize(driverFactory: DriverFactory())
-        
-        return MainViewControllerKt.MainViewController()
+        MainViewControllerKt.MainViewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
@@ -18,6 +16,3 @@ struct ContentView: View {
             .ignoresSafeArea()
     }
 }
-
-
-

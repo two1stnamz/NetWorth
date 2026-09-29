@@ -27,17 +27,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.maroondevelopment.networth.di.SnapshotViewModelFactory
 import com.maroondevelopment.networth.domain.entity.Portfolio
 import com.maroondevelopment.networth.presentation.components.AssetListItemView
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
-fun SnapshotView(viewModel: SnapshotViewModel = viewModel(factory = SnapshotViewModelFactory())) {
+fun SnapshotView(viewModel: SnapshotViewModel = koinViewModel()) {
 
     val stateUpdate = viewModel.uiState.collectAsState()
 
