@@ -77,6 +77,7 @@ class QuoteRepositoryImpl(
         return Quote(
             symbol = this.ticker,
             price = this.price,
+            valueChange = 0.45
         )
     }
 }

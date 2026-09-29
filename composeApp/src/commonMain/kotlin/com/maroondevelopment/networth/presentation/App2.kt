@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.maroondevelopment.networth.presentation.portfolio.PortfolioScreen
 import com.maroondevelopment.networth.presentation.route.Route
 import com.maroondevelopment.networth.presentation.summary.SummaryScreen
 
@@ -21,7 +22,7 @@ fun App2() {
 
             composable<Route.Summary> {
 
-                SummaryScreen()
+                PortfolioScreen()
 
             }
 

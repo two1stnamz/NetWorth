@@ -3,6 +3,7 @@ package com.maroondevelopment.networth.presentation.portfolio
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maroondevelopment.networth.domain.entity.CachePolicy
+import com.maroondevelopment.networth.domain.entity.LoadPortfolioOutcome
 import com.maroondevelopment.networth.domain.usecase.LoadPortfolioUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +27,10 @@ class PortfolioViewModel(
 
     private fun internalLoad(cachePolicy: CachePolicy) {
         viewModelScope.launch {
-            val snapshots = loadPortfolio(cachePolicy)
+            when (val outcome = loadPortfolio(cachePolicy)) {
+                LoadPortfolioOutcome.Error -> _flow.value = PortfolioUiState.Error
+                is LoadPortfolioOutcome.Success -> _flow.value = PortfolioUiState.Success(buildPortfolio(outcome.snapshots))
+            }
         }
     }
 }
