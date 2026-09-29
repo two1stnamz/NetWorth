@@ -1,9 +1,8 @@
 package com.maroondevelopment.networth.presentation.model
 
-data class AccountUiModel(
+data class AccountSummaryUiModel(
     val id: String,
     val title: String,
     val totalValue: String,
-    val valueChange: String,
-    val positions: List<PositionUiModel>
+    val valueChange: String
 )

@@ -4,5 +4,6 @@ data class PositionUiModel(
     val ticker: String,
     val name: String,
     val units: Double,
-    val value: Double
+    val currentValue: String,
+    val valueChange: String
 )
