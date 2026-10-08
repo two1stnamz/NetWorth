@@ -1,0 +1,19 @@
+CREATE TABLE Position (
+    accountId TEXT,
+    symbol TEXT PRIMARY KEY,
+    units REAL,
+    FOREIGN KEY
+);
+
+insertOrReplace:
+INSERT OR REPLACE INTO Position (symbol, units)
+VALUES (?, ?);
+
+selectAll:
+SELECT * FROM Position;
+
+selectBySymbol:
+SELECT * FROM Position WHERE symbol = ?;
+
+deleteBySymbol:
+DELETE FROM Position WHERE symbol = ?;

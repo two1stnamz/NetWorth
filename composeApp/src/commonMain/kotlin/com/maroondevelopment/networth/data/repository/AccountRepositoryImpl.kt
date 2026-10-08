@@ -11,7 +11,7 @@ import com.maroondevelopment.networth.domain.repository.AccountRepository
  */
 class AccountRepositoryImpl : AccountRepository {
 
-    private val accounts = mutableListOf(DEFAULT_ACCOUNT)
+    private val accounts = mutableListOf<Account>()
 
     override suspend fun getAccount(accountId: String): Account =
         accounts.first { it.id == accountId }
@@ -28,9 +28,5 @@ class AccountRepositoryImpl : AccountRepository {
 
     override suspend fun deleteAccount(account: Account) {
         accounts.removeAll { it.id == account.id }
-    }
-
-    companion object {
-        val DEFAULT_ACCOUNT = Account(id = "account-1", name = "Investments")
     }
 }

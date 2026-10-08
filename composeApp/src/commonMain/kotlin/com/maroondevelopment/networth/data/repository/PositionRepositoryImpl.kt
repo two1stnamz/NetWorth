@@ -2,7 +2,6 @@ package com.maroondevelopment.networth.data.repository
 
 import com.maroondevelopment.networth.domain.entity.v2.NewPosition
 import com.maroondevelopment.networth.domain.entity.v2.Position
-import com.maroondevelopment.networth.domain.repository.HoldingsRepository
 import com.maroondevelopment.networth.domain.repository.PositionRepository
 
 /**
@@ -12,19 +11,11 @@ import com.maroondevelopment.networth.domain.repository.PositionRepository
  * Placeholder until positions get their own persistence — writes are not persisted.
  */
 class PositionRepositoryImpl(
-    private val holdingsRepository: HoldingsRepository
+    private val positionRepository: PositionRepository
 ) : PositionRepository {
 
     override suspend fun getPositionsForAccount(accountId: String): List<Position> {
-        if (accountId != AccountRepositoryImpl.DEFAULT_ACCOUNT.id) return emptyList()
-
-        return holdingsRepository.getHoldings().map { holding ->
-            Position(
-                name = holding.name,
-                ticker = holding.symbol,
-                units = holding.quantity
-            )
-        }
+        return positionRepository.getPositionsForAccount(accountId)
     }
 
     override suspend fun addPositionsForAccount(accountId: String, positions: List<NewPosition>) {
