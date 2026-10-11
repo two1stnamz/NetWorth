@@ -1,8 +1,8 @@
 CREATE TABLE Position (
-    accountId TEXT,
-    symbol TEXT PRIMARY KEY,
-    units REAL,
-    FOREIGN KEY
+    id INTEGER PRIMARY KEY,
+    account_id INTEGER REFERENCES Account(id),
+    symbol TEXT,
+    units REAL
 );
 
 insertOrReplace:

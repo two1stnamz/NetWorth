@@ -18,17 +18,17 @@ class PositionDataSourceImpl(
 ) : PositionDataSource {
 
     override suspend fun getPositions(accountId: String): List<PositionModel> {
-        try {
-            database.positionQueries.selectBySymbol(symbol).executeAsOne().apply {
-                quote = QuoteDto(
-                    ticker = this.symbol,
-                    price = this.price,
-                    change = this.change
-                )
-            }
-        } catch (t: Throwable) {
-            println("[BENG][LocalQuoteDataSource] getQuote() - EXCEPTION!!! ${t.message}")
-        }
+//        try {
+//            database.positionQueries.selectBySymbol(symbol).executeAsOne().apply {
+//                quote = QuoteDto(
+//                    ticker = this.symbol,
+//                    price = this.price,
+//                    change = this.change
+//                )
+//            }
+//        } catch (t: Throwable) {
+//            println("[BENG][LocalQuoteDataSource] getQuote() - EXCEPTION!!! ${t.message}")
+//        }
 
         return emptyList()
     }
