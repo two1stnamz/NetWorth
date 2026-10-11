@@ -27,10 +27,11 @@ fun BottomSheet(content: @Composable () -> Unit) {
                 Modifier
                     .padding(horizontal = 25.dp)
                     .fillMaxWidth()
-                    .background(Color.White)
                     .clip(RoundedCornerShape(25.dp))
+                    .background(Color.White)
         ) {
 
+            content()
 
         }
     }

@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +60,7 @@ fun PortfolioScreen(
     when (val uiStateUpdate = viewModel.flow.collectAsState().value) {
         PortfolioUiState.Error -> ErrorView()
         PortfolioUiState.Loading -> LoadingView()
-        is PortfolioUiState.Success -> LoadedView(uiStateUpdate.model)
+        is PortfolioUiState.Success -> LoadedView(uiStateUpdate.model, viewModel)
     }
 
 }
@@ -92,11 +93,12 @@ private fun ErrorView() {
 
 @Composable
 private fun LoadedView(
-    portfolio: PortfolioUiModel
+    portfolio: PortfolioUiModel,
+    viewModel: PortfolioViewModel
 ) {
 
     val state = rememberLazyListState()
-    var showModal by mutableStateOf(false)
+    var showModal by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -201,12 +203,16 @@ private fun LoadedView(
                 ) {
 
                     TextField(
+                        modifier = Modifier.fillMaxWidth(),
                         state = state,
                         label = { Text("Enter account name") }
                     )
 
                     Button(
-                        onClick = { showModal = false },
+                        onClick = {
+                            showModal = false
+
+                        },
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text("Create")

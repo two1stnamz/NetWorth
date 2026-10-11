@@ -4,13 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maroondevelopment.networth.domain.entity.CachePolicy
 import com.maroondevelopment.networth.domain.entity.LoadPortfolioOutcome
+import com.maroondevelopment.networth.domain.entity.v2.CreateAccountOutcome
+import com.maroondevelopment.networth.domain.usecase.CreateAccountUseCase
 import com.maroondevelopment.networth.domain.usecase.LoadPortfolioUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PortfolioViewModel(
-    private val loadPortfolio: LoadPortfolioUseCase
+    private val loadPortfolio: LoadPortfolioUseCase,
+    private val createAccount: CreateAccountUseCase
 ) : ViewModel() {
 
     private val _flow = MutableStateFlow<PortfolioUiState>(PortfolioUiState.Loading)
@@ -23,6 +26,15 @@ class PortfolioViewModel(
 
     fun load() {
         internalLoad(CachePolicy.PREFER_CACHE)
+    }
+
+    fun createNewAccount(name: String) {
+        viewModelScope.launch {
+            when (val outcome = createAccount(name)) {
+                CreateAccountOutcome.Error -> {}
+                CreateAccountOutcome.Success -> loadPortfolio(policy = CachePolicy.PREFER_CACHE)
+            }
+        }
     }
 
     private fun internalLoad(cachePolicy: CachePolicy) {
