@@ -50,7 +50,7 @@ fun appModule(driverFactory: DriverFactory): Module = module {
     // Repositories
     single<QuoteRepository> { QuoteRepositoryImpl(remoteDataSource = get(), localDataSource = get()) }
     single<HoldingsRepository> { HoldingsRepositoryImpl() }
-    single<AccountRepository> { AccountRepositoryImpl() }
+    single<AccountRepository> { AccountRepositoryImpl(get()) }
     single<PositionRepository> { PositionRepositoryImpl(get()) }
 
     // Use cases

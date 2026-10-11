@@ -2,3 +2,6 @@ CREATE TABLE Account (
     id INTEGER PRIMARY KEY,
     name TEXT
 );
+
+selectAll:
+SELECT * FROM Account;

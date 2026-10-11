@@ -1,5 +1,6 @@
 package com.maroondevelopment.networth.data.repository
 
+import com.maroondevelopment.networth.data.datasource.AccountDataSource
 import com.maroondevelopment.networth.domain.entity.v2.Account
 import com.maroondevelopment.networth.domain.repository.AccountRepository
 
@@ -9,7 +10,9 @@ import com.maroondevelopment.networth.domain.repository.AccountRepository
  * Placeholder until accounts get their own persistence — it exists so the portfolio graph
  * can be resolved end to end.
  */
-class AccountRepositoryImpl : AccountRepository {
+class AccountRepositoryImpl(
+    private val dataSource: AccountDataSource
+) : AccountRepository {
 
     private val accounts = mutableListOf<Account>()
 

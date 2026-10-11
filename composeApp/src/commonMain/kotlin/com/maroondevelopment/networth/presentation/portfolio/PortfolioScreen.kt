@@ -211,7 +211,7 @@ private fun LoadedView(
                     Button(
                         onClick = {
                             showModal = false
-
+                            viewModel.createNewAccount(state.text.toString())
                         },
                         modifier = Modifier.padding(8.dp)
                     ) {
