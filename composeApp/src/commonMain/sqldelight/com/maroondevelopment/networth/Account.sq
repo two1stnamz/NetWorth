@@ -5,3 +5,9 @@ CREATE TABLE Account (
 
 selectAll:
 SELECT * FROM Account;
+
+insert:
+INSERT INTO Account (name) VALUES (?);
+
+get:
+SELECT * FROM Account WHERE id = ?;

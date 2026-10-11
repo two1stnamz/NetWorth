@@ -1,6 +1,7 @@
 package com.maroondevelopment.networth.data.repository
 
 import com.maroondevelopment.networth.data.datasource.AccountDataSource
+import com.maroondevelopment.networth.data.model.getOrNull
 import com.maroondevelopment.networth.domain.entity.v2.Account
 import com.maroondevelopment.networth.domain.repository.AccountRepository
 
@@ -16,13 +17,17 @@ class AccountRepositoryImpl(
 
     private val accounts = mutableListOf<Account>()
 
-    override suspend fun getAccount(accountId: String): Account =
-        accounts.first { it.id == accountId }
+    override suspend fun getAccount(accountId: Long): Account? =
+        dataSource.getAccount(accountId)?.run { Account(id, name) }
 
-    override suspend fun fetchAccounts(): List<Account> = accounts.toList()
+    override suspend fun fetchAccounts(): List<Account> =
+        (dataSource.getAllAccounts().getOrNull() ?: emptyList()).map {
+            Account(it.id, it.name)
+        }
 
-    override suspend fun createAccount(name: String): Account =
-        Account(id = "account-${accounts.size + 1}", name = name).also { accounts.add(it) }
+    override suspend fun createAccount(name: String) {
+        dataSource.createAccount(name)
+    }
 
     override suspend fun updateAccount(account: Account) {
         val index = accounts.indexOfFirst { it.id == account.id }

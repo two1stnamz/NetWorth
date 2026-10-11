@@ -9,7 +9,7 @@ import com.maroondevelopment.networth.domain.repository.QuoteRepository
 
 interface LoadAccountSnapshotUseCase {
 
-    suspend operator fun invoke(accountId: String, policy: CachePolicy): AccountSnapshot
+    suspend operator fun invoke(accountId: Long, policy: CachePolicy): AccountSnapshot
 }
 
 class LoadAccountSnapshotUseCaseImpl(
@@ -18,8 +18,8 @@ class LoadAccountSnapshotUseCaseImpl(
     private val quoteRepository: QuoteRepository
 ) : LoadAccountSnapshotUseCase {
 
-    override suspend fun invoke(accountId: String, policy: CachePolicy): AccountSnapshot {
-        val account = accountRepository.getAccount(accountId)
+    override suspend fun invoke(accountId: Long, policy: CachePolicy): AccountSnapshot {
+        val account = accountRepository.getAccount(accountId) ?: throw Exception()
         val positions = positionRepository.getPositionsForAccount(account.id)
         val tickers = positions.mapTo(mutableSetOf()) { it.ticker }
         val quotes = quoteRepository.getQuotes(tickers, policy)

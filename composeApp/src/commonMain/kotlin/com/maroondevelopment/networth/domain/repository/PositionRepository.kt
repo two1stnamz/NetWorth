@@ -5,11 +5,11 @@ import com.maroondevelopment.networth.domain.entity.v2.Position
 
 interface PositionRepository {
 
-    suspend fun getPositionsForAccount(accountId: String): List<Position>
+    suspend fun getPositionsForAccount(accountId: Long): List<Position>
 
-    suspend fun addPositionsForAccount(accountId: String, positions: List<NewPosition>)
+    suspend fun addPositionsForAccount(accountId: Long, positions: List<NewPosition>)
 
-    suspend fun updatePositionForAccount(accountId: String, position: NewPosition)
+    suspend fun updatePositionForAccount(accountId: Long, position: NewPosition)
 
-    suspend fun deletePositionForAccount(accountId: String, ticker: String)
+    suspend fun deletePositionForAccount(accountId: Long, ticker: String)
 }

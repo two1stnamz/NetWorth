@@ -1,5 +1,7 @@
 package com.maroondevelopment.networth.di
 
+import com.maroondevelopment.networth.data.datasource.AccountDataSource
+import com.maroondevelopment.networth.data.datasource.AccountDataSourceImpl
 import com.maroondevelopment.networth.data.datasource.LocalQuoteDataSource
 import com.maroondevelopment.networth.data.datasource.LocalQuoteDataSourceImpl
 import com.maroondevelopment.networth.data.datasource.PositionDataSource
@@ -43,6 +45,7 @@ fun appModule(driverFactory: DriverFactory): Module = module {
     single { createDatabase(driverFactory) }
 
     // Data sources
+    single<AccountDataSource> { AccountDataSourceImpl(get()) }
     single<PositionDataSource> { PositionDataSourceImpl(get()) }
     single<LocalQuoteDataSource> { LocalQuoteDataSourceImpl(get()) }
     single<RemoteQuoteDataSource> { RemoteQuoteDataSourceImpl() }

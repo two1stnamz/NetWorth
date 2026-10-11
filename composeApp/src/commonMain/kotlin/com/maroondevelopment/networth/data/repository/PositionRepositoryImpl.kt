@@ -15,19 +15,19 @@ class PositionRepositoryImpl(
     private val dataSource: PositionDataSource
 ) : PositionRepository {
 
-    override suspend fun getPositionsForAccount(accountId: String): List<Position> {
+    override suspend fun getPositionsForAccount(accountId: Long): List<Position> {
         return emptyList()
     }
 
-    override suspend fun addPositionsForAccount(accountId: String, positions: List<NewPosition>) {
+    override suspend fun addPositionsForAccount(accountId: Long, positions: List<NewPosition>) {
         TODO("Positions are read-only until they have their own persistence")
     }
 
-    override suspend fun updatePositionForAccount(accountId: String, position: NewPosition) {
+    override suspend fun updatePositionForAccount(accountId: Long, position: NewPosition) {
         TODO("Positions are read-only until they have their own persistence")
     }
 
-    override suspend fun deletePositionForAccount(accountId: String, ticker: String) {
+    override suspend fun deletePositionForAccount(accountId: Long, ticker: String) {
         TODO("Positions are read-only until they have their own persistence")
     }
 }
