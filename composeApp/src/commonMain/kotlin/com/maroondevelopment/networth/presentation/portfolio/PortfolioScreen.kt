@@ -17,11 +17,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import com.maroondevelopment.networth.presentation.components.BottomSheet
 import com.maroondevelopment.networth.presentation.model.PortfolioUiModel
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.add
@@ -88,90 +96,126 @@ private fun LoadedView(
 ) {
 
     val state = rememberLazyListState()
+    var showModal by mutableStateOf(false)
 
-    LazyColumn(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(top = WindowInsets.safeContent.asPaddingValues().calculateTopPadding()),
-        state = state
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
 
-        item(key = "total") {
+        LazyColumn(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = WindowInsets.safeContent.asPaddingValues().calculateTopPadding()),
+            state = state
+        ) {
 
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-            ) {
+            item(key = "total") {
 
-                Row(
-                    modifier =
-                        Modifier
-                            .align(Alignment.TopEnd)
-                ) {
-
-                    Image(
-                        modifier =
-                            Modifier
-                                .size(55.dp)
-                                .padding(8.dp)
-                                .clickable(onClick = {}),
-                        painter = painterResource(Res.drawable.add),
-                        colorFilter = ColorFilter.tint(Color.DarkGray),
-                        contentDescription = ""
-                    )
-
-                    Image(
-                        modifier =
-                            Modifier
-                                .size(55.dp)
-                                .padding(10.dp)
-                                .clickable(onClick = {}),
-                        painter = painterResource(Res.drawable.refresh),
-                        colorFilter = ColorFilter.tint(Color.DarkGray),
-                        contentDescription = ""
-                    )
-                }
-
-                Text(
+                Box(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 25.dp)
-                            .padding(top = 85.dp),
-                    text = "$1,022,450.56",
-                    fontSize = TextUnit(45f, TextUnitType.Sp),
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
+                ) {
+
+                    Row(
+                        modifier =
+                            Modifier
+                                .align(Alignment.TopEnd)
+                    ) {
+
+                        Image(
+                            modifier =
+                                Modifier
+                                    .size(55.dp)
+                                    .padding(8.dp)
+                                    .clickable(onClick = { showModal = true }),
+                            painter = painterResource(Res.drawable.add),
+                            colorFilter = ColorFilter.tint(Color.DarkGray),
+                            contentDescription = ""
+                        )
+
+                        Image(
+                            modifier =
+                                Modifier
+                                    .size(55.dp)
+                                    .padding(10.dp)
+                                    .clickable(onClick = {}),
+                            painter = painterResource(Res.drawable.refresh),
+                            colorFilter = ColorFilter.tint(Color.DarkGray),
+                            contentDescription = ""
+                        )
+                    }
+
+                    Text(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 25.dp)
+                                .padding(top = 85.dp),
+                        text = "$1,022,450.56",
+                        fontSize = TextUnit(45f, TextUnitType.Sp),
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+
+                }
+
+            }
+
+
+            items(portfolio.accounts) { item ->
+
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .background(Color.LightGray)
+                            .clip(RoundedCornerShape(8.dp))
+                            .padding(25.dp)
+                ) {
+
+                    Text("Title: ${item.title}")
+
+                    Text("Total Value: ${item.totalValue}")
+
+                    Text("Total Change: ${item.valueChange}")
+
+                }
 
             }
 
         }
 
+        if (showModal) {
 
-        items(portfolio.accounts) { item ->
+            val state = rememberTextFieldState()
 
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray)
-                        .clip(RoundedCornerShape(8.dp))
-                        .padding(25.dp)
-            ) {
+            BottomSheet {
 
-                Text("Title: ${item.title}")
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(25.dp)
+                ) {
 
-                Text("Total Value: ${item.totalValue}")
+                    TextField(
+                        state = state,
+                        label = { Text("Enter account name") }
+                    )
 
-                Text("Total Change: ${item.valueChange}")
+                    Button(
+                        onClick = { showModal = false },
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text("Create")
+                    }
+                }
 
             }
 
         }
 
     }
-
 }

@@ -1,5 +1,6 @@
 package com.maroondevelopment.networth.data.repository
 
+import com.maroondevelopment.networth.data.datasource.PositionDataSource
 import com.maroondevelopment.networth.domain.entity.v2.NewPosition
 import com.maroondevelopment.networth.domain.entity.v2.Position
 import com.maroondevelopment.networth.domain.repository.PositionRepository
@@ -11,11 +12,11 @@ import com.maroondevelopment.networth.domain.repository.PositionRepository
  * Placeholder until positions get their own persistence — writes are not persisted.
  */
 class PositionRepositoryImpl(
-    private val positionRepository: PositionRepository
+    private val dataSource: PositionDataSource
 ) : PositionRepository {
 
     override suspend fun getPositionsForAccount(accountId: String): List<Position> {
-        return positionRepository.getPositionsForAccount(accountId)
+        return emptyList()
     }
 
     override suspend fun addPositionsForAccount(accountId: String, positions: List<NewPosition>) {
