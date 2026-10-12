@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -39,6 +38,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import com.maroondevelopment.networth.presentation.account.ErrorView
+import com.maroondevelopment.networth.presentation.account.LoadingView
 import com.maroondevelopment.networth.presentation.components.BottomSheet
 import com.maroondevelopment.networth.presentation.model.PortfolioUiModel
 import networth.composeapp.generated.resources.Res
@@ -61,32 +62,6 @@ fun PortfolioScreen(
         PortfolioUiState.Error -> ErrorView()
         PortfolioUiState.Loading -> LoadingView()
         is PortfolioUiState.Success -> LoadedView(uiStateUpdate.model, onAccountSelected, viewModel)
-    }
-
-}
-
-@Composable
-private fun LoadingView() {
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center) {
-
-        CircularProgressIndicator()
-
-    }
-
-}
-
-@Composable
-private fun ErrorView() {
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center) {
-
-        Text("Something went wrong")
-
     }
 
 }
