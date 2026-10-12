@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +49,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PortfolioScreen(
+    onAccountSelected: (Long) -> Unit,
     viewModel: PortfolioViewModel = koinViewModel()
 ) {
 
@@ -60,7 +60,7 @@ fun PortfolioScreen(
     when (val uiStateUpdate = viewModel.flow.collectAsState().value) {
         PortfolioUiState.Error -> ErrorView()
         PortfolioUiState.Loading -> LoadingView()
-        is PortfolioUiState.Success -> LoadedView(uiStateUpdate.model, viewModel)
+        is PortfolioUiState.Success -> LoadedView(uiStateUpdate.model, onAccountSelected, viewModel)
     }
 
 }
@@ -94,6 +94,7 @@ private fun ErrorView() {
 @Composable
 private fun LoadedView(
     portfolio: PortfolioUiModel,
+    onAccountSelected: (Long) -> Unit,
     viewModel: PortfolioViewModel
 ) {
 
@@ -166,14 +167,16 @@ private fun LoadedView(
             }
 
 
-            items(portfolio.accounts) { item ->
+            items(portfolio.accounts, key = { it.id }) { item ->
 
                 Column(
                     modifier =
                         Modifier
+                            .padding(horizontal = 25.dp)
                             .fillMaxWidth()
                             .background(Color.LightGray)
-                            .clip(RoundedCornerShape(8.dp))
+                            .clickable(onClick = { onAccountSelected(item.id) })
+                            .clip(RoundedCornerShape(20.dp))
                             .padding(25.dp)
                 ) {
 

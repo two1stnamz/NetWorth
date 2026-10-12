@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.maroondevelopment.networth.presentation.portfolio.PortfolioScreen
 import com.maroondevelopment.networth.presentation.route.Route
-import com.maroondevelopment.networth.presentation.summary.SummaryScreen
 
 @Composable
 fun App2() {
@@ -22,7 +21,11 @@ fun App2() {
 
             composable<Route.Summary> {
 
-                PortfolioScreen()
+                PortfolioScreen(
+                    onAccountSelected = {
+
+                    }
+                )
 
             }
 
