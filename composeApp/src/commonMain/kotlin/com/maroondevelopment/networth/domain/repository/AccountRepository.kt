@@ -6,11 +6,12 @@ interface AccountRepository {
 
     suspend fun getAccount(accountId: Long): Account?
 
-    suspend fun fetchAccounts(): List<Account>
+    suspend fun getAccountsForInstitution(institutionId: Long): List<Account>
 
-    suspend fun createAccount(name: String)
+    suspend fun createAccount(institutionId: Long, name: String)
 
-    suspend fun updateAccount(account: Account)
+    suspend fun renameAccount(accountId: Long, name: String)
 
-    suspend fun deleteAccount(account: Account)
+    /** Also removes every position held in the account. */
+    suspend fun deleteAccount(accountId: Long)
 }

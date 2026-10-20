@@ -5,15 +5,25 @@ import com.maroondevelopment.networth.domain.repository.AccountRepository
 
 interface CreateAccountUseCase {
 
-    suspend operator fun invoke(name: String): CreateAccountOutcome
+    /** Accounts always belong to an institution, so [institutionId] is required. */
+    suspend operator fun invoke(institutionId: Long, name: String): CreateAccountOutcome
 }
 
 class CreateAccountUseCaseImpl(
     private val accountRepository: AccountRepository
 ) : CreateAccountUseCase {
 
-    override suspend fun invoke(name: String): CreateAccountOutcome {
-        accountRepository.createAccount(name)
-        return CreateAccountOutcome.Success
+    override suspend fun invoke(institutionId: Long, name: String): CreateAccountOutcome {
+        val trimmed = name.trim()
+
+        if (trimmed.isEmpty()) return CreateAccountOutcome.Error
+
+        return try {
+            accountRepository.createAccount(institutionId, trimmed)
+            CreateAccountOutcome.Success
+        } catch (t: Throwable) {
+            println("[BENG][CreateAccountUseCase] invoke() - EXCEPTION!!! ${t.message}")
+            CreateAccountOutcome.Error
+        }
     }
 }

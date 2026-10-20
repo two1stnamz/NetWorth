@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,12 +41,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.maroondevelopment.networth.presentation.components.BottomSheet
 import com.maroondevelopment.networth.presentation.components.FloatingToolbar
+import com.maroondevelopment.networth.presentation.components.MESSAGE_DURATION_MS
+import com.maroondevelopment.networth.presentation.components.MessageBanner
 import com.maroondevelopment.networth.presentation.components.TOOLBAR_CONTENT_PADDING
 import com.maroondevelopment.networth.presentation.components.ToolbarAction
 import com.maroondevelopment.networth.presentation.model.PositionUiModel
@@ -60,8 +64,6 @@ import networth.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-
-private const val MESSAGE_DURATION_MS = 2_500L
 
 @Composable
 fun AccountInfoScreen(
@@ -413,13 +415,15 @@ private fun AddPositionSheet(
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 state = tickerState,
-                label = { Text("Ticker") }
+                label = { Text("Ticker") },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
 
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 state = unitsState,
-                label = { Text("Units") }
+                label = { Text("Units") },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
 
             SheetActions(
@@ -463,7 +467,8 @@ private fun EditUnitsSheet(
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 state = unitsState,
-                label = { Text("Units") }
+                label = { Text("Units") },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
 
             SheetActions(
@@ -554,21 +559,6 @@ private fun DeleteConfirmationSheet(
         }
 
     }
-}
-
-@Composable
-private fun MessageBanner(message: String) {
-
-    Text(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-        text = message,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center
-    )
 }
 
 @Composable

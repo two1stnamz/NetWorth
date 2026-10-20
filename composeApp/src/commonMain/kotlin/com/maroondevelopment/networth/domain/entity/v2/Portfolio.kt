@@ -1,16 +1,16 @@
 package com.maroondevelopment.networth.domain.entity.v2
 
 /**
- * Every account the user holds, valued as one whole.
+ * Every institution the user holds, valued as one whole.
  *
- * The totals are the sum of all positions across all accounts, so callers never have to
- * re-derive the headline figure from the snapshots.
+ * The totals are the sum of all positions across all accounts at all institutions, so callers
+ * never have to re-derive the headline figure from the snapshots.
  */
 data class Portfolio(
-    val accounts: List<AccountSnapshot>
+    val institutions: List<InstitutionSnapshot>
 ) {
 
-    val totalValue: Double get() = accounts.sumOf { it.totalValue }
+    val totalValue: Double get() = institutions.sumOf { it.totalValue }
 
-    val totalValueChange: Double get() = accounts.sumOf { it.totalValueChange }
+    val totalValueChange: Double get() = institutions.sumOf { it.totalValueChange }
 }

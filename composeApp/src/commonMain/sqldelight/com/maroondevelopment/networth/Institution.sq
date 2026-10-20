@@ -1,0 +1,20 @@
+-- A top-level banking firm. Accounts hang off an institution.
+CREATE TABLE Institution (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM Institution ORDER BY name ASC;
+
+get:
+SELECT * FROM Institution WHERE id = ?;
+
+insert:
+INSERT INTO Institution (name) VALUES (?);
+
+deleteById:
+DELETE FROM Institution WHERE id = ?;
+
+updateName:
+UPDATE Institution SET name = ? WHERE id = ?;

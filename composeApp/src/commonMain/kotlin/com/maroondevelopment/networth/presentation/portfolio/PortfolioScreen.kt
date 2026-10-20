@@ -6,21 +6,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -40,11 +45,14 @@ import com.maroondevelopment.networth.presentation.account.ErrorView
 import com.maroondevelopment.networth.presentation.account.LoadingView
 import com.maroondevelopment.networth.presentation.components.BottomSheet
 import com.maroondevelopment.networth.presentation.components.FloatingToolbar
+import com.maroondevelopment.networth.presentation.components.MESSAGE_DURATION_MS
+import com.maroondevelopment.networth.presentation.components.MessageBanner
+import com.maroondevelopment.networth.presentation.components.SummaryCard
 import com.maroondevelopment.networth.presentation.components.TOOLBAR_CONTENT_PADDING
 import com.maroondevelopment.networth.presentation.components.ToolbarAction
-import com.maroondevelopment.networth.presentation.model.AccountSummaryUiModel
-import com.maroondevelopment.networth.presentation.model.PortfolioUiModel
+import com.maroondevelopment.networth.presentation.model.InstitutionSummaryUiModel
 import com.maroondevelopment.networth.presentation.theme.appColors
+import kotlinx.coroutines.delay
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.add
 import networth.composeapp.generated.resources.refresh
@@ -52,7 +60,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PortfolioScreen(
-    onAccountSelected: (Long) -> Unit,
+    onInstitutionSelected: (Long) -> Unit,
     onHistorySelected: () -> Unit,
     viewModel: PortfolioViewModel = koinViewModel()
 ) {
@@ -65,21 +73,31 @@ fun PortfolioScreen(
         PortfolioUiState.Error -> ErrorView()
         PortfolioUiState.Loading -> LoadingView()
         is PortfolioUiState.Success ->
-            LoadedView(uiStateUpdate.model, onAccountSelected, onHistorySelected, viewModel)
+            LoadedView(uiStateUpdate, onInstitutionSelected, onHistorySelected, viewModel)
     }
 
 }
 
 @Composable
 private fun LoadedView(
-    portfolio: PortfolioUiModel,
-    onAccountSelected: (Long) -> Unit,
+    state: PortfolioUiState.Success,
+    onInstitutionSelected: (Long) -> Unit,
     onHistorySelected: () -> Unit,
     viewModel: PortfolioViewModel
 ) {
 
-    val state = rememberLazyListState()
+    val portfolio = state.model
+    val listState = rememberLazyListState()
     var showModal by remember { mutableStateOf(false) }
+    var renameTarget by remember { mutableStateOf<InstitutionSummaryUiModel?>(null) }
+    var deleteTarget by remember { mutableStateOf<InstitutionSummaryUiModel?>(null) }
+
+    LaunchedEffect(state.message) {
+        if (state.message != null) {
+            delay(MESSAGE_DURATION_MS)
+            viewModel.messageShown()
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -90,7 +108,7 @@ private fun LoadedView(
                 Modifier
                     .fillMaxSize()
                     .padding(top = WindowInsets.safeContent.asPaddingValues().calculateTopPadding()),
-            state = state,
+            state = listState,
             contentPadding = PaddingValues(bottom = TOOLBAR_CONTENT_PADDING),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -120,12 +138,24 @@ private fun LoadedView(
 
             }
 
+            state.message?.let { message ->
 
-            items(portfolio.accounts, key = { it.id }) { item ->
+                item(key = "message") {
+                    MessageBanner(message)
+                }
 
-                AccountCard(
-                    account = item,
-                    onClick = { onAccountSelected(item.id) }
+            }
+
+            items(portfolio.institutions, key = { it.id }) { item ->
+
+                SummaryCard(
+                    title = item.title,
+                    totalValue = item.totalValue,
+                    valueChange = item.valueChange,
+                    isGain = item.isGain,
+                    onClick = { onInstitutionSelected(item.id) },
+                    onRename = { renameTarget = item },
+                    onDelete = { deleteTarget = item }
                 )
 
             }
@@ -137,7 +167,7 @@ private fun LoadedView(
             actions = listOf(
                 ToolbarAction(
                     icon = Res.drawable.add,
-                    contentDescription = "Add an account",
+                    contentDescription = "Add an institution",
                     onClick = { showModal = true }
                 ),
                 ToolbarAction(
@@ -150,7 +180,7 @@ private fun LoadedView(
 
         if (showModal) {
 
-            val state = rememberTextFieldState()
+            val nameState = rememberTextFieldState()
 
             BottomSheet {
 
@@ -163,14 +193,15 @@ private fun LoadedView(
 
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
-                        state = state,
-                        label = { Text("Enter account name") }
+                        state = nameState,
+                        label = { Text("Enter institution name") },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                     )
 
                     Button(
                         onClick = {
                             showModal = false
-                            viewModel.createNewAccount(state.text.toString())
+                            viewModel.createNewInstitution(nameState.text.toString())
                         },
                         modifier = Modifier.padding(8.dp)
                     ) {
@@ -182,59 +213,146 @@ private fun LoadedView(
 
         }
 
+        renameTarget?.let { institution ->
+
+            RenameInstitutionSheet(
+                institution = institution,
+                onCancel = { renameTarget = null },
+                onConfirm = { name ->
+                    renameTarget = null
+                    viewModel.renameInstitution(institution.id, name)
+                }
+            )
+
+        }
+
+        deleteTarget?.let { institution ->
+
+            DeleteInstitutionSheet(
+                institution = institution,
+                onCancel = { deleteTarget = null },
+                onConfirm = {
+                    deleteTarget = null
+                    viewModel.deleteInstitution(institution.id, institution.title)
+                }
+            )
+
+        }
+
     }
 }
 
 @Composable
-private fun AccountCard(
-    account: AccountSummaryUiModel,
-    onClick: () -> Unit
+private fun RenameInstitutionSheet(
+    institution: InstitutionSummaryUiModel,
+    onCancel: () -> Unit,
+    onConfirm: (name: String) -> Unit
 ) {
 
-    Card(
-        onClick = onClick,
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
+    val nameState = rememberTextFieldState(institution.title)
 
-        Row(
+    BottomSheet {
+
+        Column(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                    .padding(25.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
             Text(
-                modifier = Modifier.weight(1f),
-                text = account.title,
+                text = "Rename ${institution.title}",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                fontWeight = FontWeight.Bold
             )
 
-            Column(
-                horizontalAlignment = Alignment.End
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                state = nameState,
+                label = { Text("Institution name") },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
 
-                Text(
-                    text = account.totalValue,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                TextButton(onClick = onCancel) {
+                    Text("Cancel")
+                }
 
-                Text(
-                    text = account.valueChange,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (account.isGain) appColors.gain else appColors.loss
-                )
+                Spacer(modifier = Modifier.width(8.dp))
+
+                OutlinedButton(onClick = { onConfirm(nameState.text.toString()) }) {
+                    Text("Save")
+                }
 
             }
 
         }
 
     }
+}
+
+@Composable
+private fun DeleteInstitutionSheet(
+    institution: InstitutionSummaryUiModel,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit
+) {
+
+    BottomSheet {
+
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(25.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            Text(
+                text = "Delete ${institution.title}?",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = institution.deleteWarning(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+
+                TextButton(onClick = onCancel) {
+                    Text("Cancel")
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                OutlinedButton(
+                    onClick = onConfirm,
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = appColors.loss)
+                ) {
+                    Text("Delete")
+                }
+
+            }
+
+        }
+
+    }
+}
+
+/** Spells out what else a delete takes with the institution. */
+private fun InstitutionSummaryUiModel.deleteWarning(): String = when (accountCount) {
+    0 -> "This institution holds no accounts. It will be removed."
+    1 -> "1 account and its positions will be removed, worth $totalValue in total."
+    else -> "$accountCount accounts and their positions will be removed, worth $totalValue in total."
 }

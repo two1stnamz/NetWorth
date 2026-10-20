@@ -1,13 +1,26 @@
 CREATE TABLE Account (
     id INTEGER PRIMARY KEY,
-    name TEXT
+    institution_id INTEGER NOT NULL REFERENCES Institution(id),
+    name TEXT NOT NULL
 );
 
 selectAll:
 SELECT * FROM Account;
 
-insert:
-INSERT INTO Account (name) VALUES (?);
+selectByInstitution:
+SELECT * FROM Account WHERE institution_id = ? ORDER BY name ASC;
 
 get:
 SELECT * FROM Account WHERE id = ?;
+
+insert:
+INSERT INTO Account (institution_id, name) VALUES (?, ?);
+
+deleteById:
+DELETE FROM Account WHERE id = ?;
+
+updateName:
+UPDATE Account SET name = ? WHERE id = ?;
+
+deleteByInstitution:
+DELETE FROM Account WHERE institution_id = ?;

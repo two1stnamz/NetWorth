@@ -5,5 +5,7 @@ data class AccountSummaryUiModel(
     val title: String,
     val totalValue: String,
     val valueChange: String,
-    val isGain: Boolean
+    val isGain: Boolean,
+    /** How many positions a delete would take with the account. */
+    val positionCount: Int
 )

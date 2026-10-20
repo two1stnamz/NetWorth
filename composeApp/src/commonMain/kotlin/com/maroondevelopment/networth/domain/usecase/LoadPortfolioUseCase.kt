@@ -2,10 +2,10 @@ package com.maroondevelopment.networth.domain.usecase
 
 import com.maroondevelopment.networth.domain.entity.CachePolicy
 import com.maroondevelopment.networth.domain.entity.LoadPortfolioOutcome
-import com.maroondevelopment.networth.domain.entity.v2.AccountSnapshot
-import com.maroondevelopment.networth.domain.entity.v2.LoadAccountSnapshotOutcome
+import com.maroondevelopment.networth.domain.entity.v2.InstitutionSnapshot
+import com.maroondevelopment.networth.domain.entity.v2.LoadInstitutionSnapshotOutcome
 import com.maroondevelopment.networth.domain.entity.v2.Portfolio
-import com.maroondevelopment.networth.domain.repository.AccountRepository
+import com.maroondevelopment.networth.domain.repository.InstitutionRepository
 
 interface LoadPortfolioUseCase {
 
@@ -13,22 +13,22 @@ interface LoadPortfolioUseCase {
 }
 
 /**
- * Loads every account, values each one's positions against their quotes, and returns them as a
- * single [Portfolio] whose totals span the whole holding.
+ * Loads every institution, values the accounts held at each, and returns them as a single
+ * [Portfolio] whose totals span the whole holding.
  */
 class LoadPortfolioUseCaseImpl(
-    private val accountRepository: AccountRepository,
-    private val loadAccountSnapshot: LoadAccountSnapshotUseCase
+    private val institutionRepository: InstitutionRepository,
+    private val loadInstitutionSnapshot: LoadInstitutionSnapshotUseCase
 ): LoadPortfolioUseCase {
 
     override suspend fun invoke(policy: CachePolicy): LoadPortfolioOutcome {
-        val accounts = accountRepository.fetchAccounts()
-        val snapshots = mutableListOf<AccountSnapshot>()
+        val institutions = institutionRepository.fetchInstitutions()
+        val snapshots = mutableListOf<InstitutionSnapshot>()
 
-        accounts.forEach { account ->
-            when (val outcome = loadAccountSnapshot(account.id, policy)) {
-                is LoadAccountSnapshotOutcome.Success -> snapshots.add(outcome.snapshot)
-                is LoadAccountSnapshotOutcome.Failure -> return LoadPortfolioOutcome.Error
+        institutions.forEach { institution ->
+            when (val outcome = loadInstitutionSnapshot(institution.id, policy)) {
+                is LoadInstitutionSnapshotOutcome.Success -> snapshots.add(outcome.snapshot)
+                is LoadInstitutionSnapshotOutcome.Failure -> return LoadPortfolioOutcome.Error
             }
         }
 

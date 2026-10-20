@@ -36,5 +36,6 @@ fun AccountSnapshot.toSummaryUiModel(): AccountSummaryUiModel =
         title = account.name,
         totalValue = totalValue.roundTo2Decimals().toCurrency(),
         valueChange = totalValueChange.roundTo2Decimals().toSignedCurrency(),
-        isGain = totalValueChange >= 0.0
+        isGain = totalValueChange >= 0.0,
+        positionCount = assets.size
     )

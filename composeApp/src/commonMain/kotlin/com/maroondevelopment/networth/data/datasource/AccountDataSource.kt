@@ -6,50 +6,82 @@ import com.maroondevelopment.networth.data.model.Result
 
 interface AccountDataSource {
 
-    suspend fun getAllAccounts(): Result<List<AccountModel>>
+    suspend fun getAccountsForInstitution(institutionId: Long): Result<List<AccountModel>>
 
-    suspend fun createAccount(name: String)
+    suspend fun getAccount(id: Long): Result<AccountModel?>
 
-    suspend fun getAccount(id: Long): AccountModel?
+    suspend fun createAccount(institutionId: Long, name: String): Result<Unit>
+
+    suspend fun renameAccount(id: Long, name: String): Result<Unit>
+
+    /** Also removes every position held in the account. */
+    suspend fun deleteAccount(id: Long): Result<Unit>
 }
 
 class AccountDataSourceImpl(
     private val database: Database
 ): AccountDataSource {
 
-    override suspend fun getAllAccounts(): Result<List<AccountModel>> {
-        val accounts = mutableListOf<AccountModel>()
-
+    override suspend fun getAccountsForInstitution(institutionId: Long): Result<List<AccountModel>> =
         try {
-            database.accountQueries.selectAll().executeAsList().forEach {
-                try {
-                    accounts.add(AccountModel(it.id, it.name ?: throw Exception("ERROR: Null account name!")))
-                } catch (t: Throwable) {
-                    println("[BENG][AccountDataSourceImpl] getAllAccounts() - EXCEPTION!!! ${t.message}")
-                }
-            }
+            Result.Success(
+                database.accountQueries
+                    .selectByInstitution(institutionId)
+                    .executeAsList()
+                    .map { it.toModel() }
+            )
         } catch (t: Throwable) {
-            println("[BENG][AccountDataSourceImpl] getAllAccounts() - EXCEPTION!!! ${t.message}")
+            println("[BENG][AccountDataSourceImpl] getAccountsForInstitution() - EXCEPTION!!! ${t.message}")
+            Result.Error.Storage(t)
         }
 
-        return Result.Success(accounts)
-    }
-
-    override suspend fun createAccount(name: String) {
+    override suspend fun getAccount(id: Long): Result<AccountModel?> =
         try {
-            database.accountQueries.insert(name)
-        } catch (t: Throwable) {
-            println("[BENG][AccountDataSourceImpl] createAccount() - EXCEPTION!!! ${t.message}")
-        }
-    }
-
-    override suspend fun getAccount(id: Long): AccountModel? =
-        try {
-            database.accountQueries.get(id).executeAsOne().run {
-                AccountModel(id, name ?: throw Exception("NAME IS NULL!!!"))
-            }
+            Result.Success(
+                database.accountQueries
+                    .get(id)
+                    .executeAsOneOrNull()
+                    ?.toModel()
+            )
         } catch (t: Throwable) {
             println("[BENG][AccountDataSourceImpl] getAccount() - EXCEPTION!!! ${t.message}")
-            null
+            Result.Error.Storage(t)
         }
+
+    override suspend fun createAccount(institutionId: Long, name: String): Result<Unit> =
+        try {
+            database.accountQueries.insert(institutionId, name)
+            Result.Success(Unit)
+        } catch (t: Throwable) {
+            println("[BENG][AccountDataSourceImpl] createAccount() - EXCEPTION!!! ${t.message}")
+            Result.Error.Storage(t)
+        }
+
+    override suspend fun renameAccount(id: Long, name: String): Result<Unit> =
+        try {
+            database.accountQueries.updateName(name = name, id = id)
+            Result.Success(Unit)
+        } catch (t: Throwable) {
+            println("[BENG][AccountDataSourceImpl] renameAccount() - EXCEPTION!!! ${t.message}")
+            Result.Error.Storage(t)
+        }
+
+    /**
+     * `Position.account_id` carries no `ON DELETE CASCADE`, so the account's positions are
+     * cleared here, in the same transaction as the account itself.
+     */
+    override suspend fun deleteAccount(id: Long): Result<Unit> =
+        try {
+            database.transaction {
+                database.positionQueries.deleteByAccount(id)
+                database.accountQueries.deleteById(id)
+            }
+            Result.Success(Unit)
+        } catch (t: Throwable) {
+            println("[BENG][AccountDataSourceImpl] deleteAccount() - EXCEPTION!!! ${t.message}")
+            Result.Error.Storage(t)
+        }
+
+    private fun com.maroondevelopment.networth.Account.toModel(): AccountModel =
+        AccountModel(id = id, institutionId = institution_id, name = name)
 }

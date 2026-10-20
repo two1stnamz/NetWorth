@@ -1,40 +1,41 @@
 package com.maroondevelopment.networth.data.repository
 
 import com.maroondevelopment.networth.data.datasource.AccountDataSource
+import com.maroondevelopment.networth.data.model.AccountModel
 import com.maroondevelopment.networth.data.model.getOrNull
+import com.maroondevelopment.networth.data.model.getOrThrow
 import com.maroondevelopment.networth.domain.entity.v2.Account
 import com.maroondevelopment.networth.domain.repository.AccountRepository
 
 /**
- * In-memory [AccountRepository] seeded with the single account that backs `investments.json`.
+ * [AccountRepository] backed by the `Account` table, scoped by `institution_id`.
  *
- * Placeholder until accounts get their own persistence — it exists so the portfolio graph
- * can be resolved end to end.
+ * Reads degrade to nothing so a storage failure cannot take a screen down, while writes throw
+ * so the calling use case can report the failure instead of silently claiming success.
  */
 class AccountRepositoryImpl(
     private val dataSource: AccountDataSource
 ) : AccountRepository {
 
-    private val accounts = mutableListOf<Account>()
-
     override suspend fun getAccount(accountId: Long): Account? =
-        dataSource.getAccount(accountId)?.run { Account(id, name) }
+        dataSource.getAccount(accountId).getOrNull()?.toEntity()
 
-    override suspend fun fetchAccounts(): List<Account> =
-        (dataSource.getAllAccounts().getOrNull() ?: emptyList()).map {
-            Account(it.id, it.name)
-        }
+    override suspend fun getAccountsForInstitution(institutionId: Long): List<Account> =
+        dataSource.getAccountsForInstitution(institutionId).getOrNull()?.map { it.toEntity() }
+            ?: emptyList()
 
-    override suspend fun createAccount(name: String) {
-        dataSource.createAccount(name)
+    override suspend fun createAccount(institutionId: Long, name: String) {
+        dataSource.createAccount(institutionId, name).getOrThrow()
     }
 
-    override suspend fun updateAccount(account: Account) {
-        val index = accounts.indexOfFirst { it.id == account.id }
-        if (index >= 0) accounts[index] = account
+    override suspend fun renameAccount(accountId: Long, name: String) {
+        dataSource.renameAccount(accountId, name).getOrThrow()
     }
 
-    override suspend fun deleteAccount(account: Account) {
-        accounts.removeAll { it.id == account.id }
+    override suspend fun deleteAccount(accountId: Long) {
+        dataSource.deleteAccount(accountId).getOrThrow()
     }
+
+    private fun AccountModel.toEntity(): Account =
+        Account(id = id, institutionId = institutionId, name = name)
 }
