@@ -47,3 +47,12 @@ inline fun <T, R> Result<T>.fold(
     is Result.Success -> onSuccess(data)
     is Result.Error -> onError(this)
 }
+
+/** Raised by [getOrThrow] so a repository can surface a data-layer failure to its caller. */
+class DataSourceException(val error: Result.Error) : Exception("Data source failure: $error")
+
+/** The value on success, or throws [DataSourceException] on any [Result.Error]. */
+fun <T> Result<T>.getOrThrow(): T = when (this) {
+    is Result.Success -> data
+    is Result.Error -> throw DataSourceException(this)
+}

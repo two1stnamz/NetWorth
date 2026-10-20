@@ -3,6 +3,9 @@ package com.maroondevelopment.networth.presentation.portfolio
 import com.maroondevelopment.networth.domain.entity.v2.AccountSnapshot
 import com.maroondevelopment.networth.presentation.model.AccountSummaryUiModel
 import com.maroondevelopment.networth.presentation.model.PortfolioUiModel
+import com.maroondevelopment.networth.util.roundTo2Decimals
+import com.maroondevelopment.networth.util.toCurrency
+import com.maroondevelopment.networth.util.toSignedCurrency
 
 fun buildPortfolio(snapshots: List<AccountSnapshot>): PortfolioUiModel {
     val accounts = mutableListOf<AccountSummaryUiModel>()
@@ -16,8 +19,19 @@ fun buildPortfolio(snapshots: List<AccountSnapshot>): PortfolioUiModel {
         totalValue += accountTotalValue
         totalChange += accountTotalChange
 
-        accounts.add(AccountSummaryUiModel(snapshot.account.id, snapshot.account.name, "$$totalValue", "$$totalChange"))
+        accounts.add(
+            AccountSummaryUiModel(
+                id = snapshot.account.id,
+                title = snapshot.account.name,
+                totalValue = accountTotalValue.roundTo2Decimals().toCurrency(),
+                valueChange = accountTotalChange.roundTo2Decimals().toSignedCurrency()
+            )
+        )
     }
 
-    return PortfolioUiModel("$$totalValue", "$$totalChange", accounts)
+    return PortfolioUiModel(
+        totalValue = totalValue.roundTo2Decimals().toCurrency(),
+        totalChange = totalChange.roundTo2Decimals().toSignedCurrency(),
+        accounts = accounts
+    )
 }

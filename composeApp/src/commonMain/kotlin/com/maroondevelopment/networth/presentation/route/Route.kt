@@ -8,5 +8,5 @@ sealed interface Route {
     data object Summary : Route
 
     @Serializable
-    data class Account(val id: String) : Route
+    data class Account(val id: Long) : Route
 }

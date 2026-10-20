@@ -20,16 +20,22 @@ import com.maroondevelopment.networth.domain.usecase.AddPositionToAccountUseCase
 import com.maroondevelopment.networth.domain.usecase.AddPositionToAccountUseCaseImpl
 import com.maroondevelopment.networth.domain.usecase.CreateAccountUseCase
 import com.maroondevelopment.networth.domain.usecase.CreateAccountUseCaseImpl
+import com.maroondevelopment.networth.domain.usecase.DeletePositionFromAccountUseCase
+import com.maroondevelopment.networth.domain.usecase.DeletePositionFromAccountUseCaseImpl
 import com.maroondevelopment.networth.domain.usecase.FetchPortfolioUseCase
 import com.maroondevelopment.networth.domain.usecase.LoadAccountSnapshotUseCase
 import com.maroondevelopment.networth.domain.usecase.LoadAccountSnapshotUseCaseImpl
 import com.maroondevelopment.networth.domain.usecase.LoadPortfolioUseCase
 import com.maroondevelopment.networth.domain.usecase.LoadPortfolioUseCaseImpl
+import com.maroondevelopment.networth.domain.usecase.UpdatePositionUnitsUseCase
+import com.maroondevelopment.networth.domain.usecase.UpdatePositionUnitsUseCaseImpl
 import com.maroondevelopment.networth.persistence.DriverFactory
 import com.maroondevelopment.networth.persistence.createDatabase
 import com.maroondevelopment.networth.presentation.SnapshotViewModel
+import com.maroondevelopment.networth.presentation.account.AccountInfoViewModel
 import com.maroondevelopment.networth.presentation.portfolio.PortfolioViewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -61,9 +67,15 @@ fun appModule(driverFactory: DriverFactory): Module = module {
     factory<LoadAccountSnapshotUseCase> { LoadAccountSnapshotUseCaseImpl(get(), get(), get()) }
     factory<LoadPortfolioUseCase> { LoadPortfolioUseCaseImpl(get(), get()) }
     factory<CreateAccountUseCase> { CreateAccountUseCaseImpl(get()) }
-    factory<AddPositionToAccountUseCase> { AddPositionToAccountUseCaseImpl(get()) }
+    factory<AddPositionToAccountUseCase> { AddPositionToAccountUseCaseImpl(get(), get(), get()) }
+    factory<UpdatePositionUnitsUseCase> { UpdatePositionUnitsUseCaseImpl(get(), get()) }
+    factory<DeletePositionFromAccountUseCase> { DeletePositionFromAccountUseCaseImpl(get(), get()) }
 
     // View models
     viewModelOf(::PortfolioViewModel)
+    // The account id comes from the nav route, so it is passed in rather than resolved.
+    viewModel { parameters ->
+        AccountInfoViewModel(parameters.get(), get(), get(), get(), get())
+    }
     viewModelOf(::SnapshotViewModel)
 }

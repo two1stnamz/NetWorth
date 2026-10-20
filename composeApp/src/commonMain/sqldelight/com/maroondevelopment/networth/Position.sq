@@ -5,15 +5,21 @@ CREATE TABLE Position (
     units REAL
 );
 
-insertOrReplace:
-INSERT OR REPLACE INTO Position (symbol, units)
-VALUES (?, ?);
-
 selectAll:
 SELECT * FROM Position;
 
-selectBySymbol:
-SELECT * FROM Position WHERE symbol = ?;
+selectByAccount:
+SELECT * FROM Position WHERE account_id = ? ORDER BY symbol ASC;
 
-deleteBySymbol:
-DELETE FROM Position WHERE symbol = ?;
+selectByAccountAndSymbol:
+SELECT * FROM Position WHERE account_id = ? AND symbol = ?;
+
+insert:
+INSERT INTO Position (account_id, symbol, units)
+VALUES (?, ?, ?);
+
+updateUnits:
+UPDATE Position SET units = ? WHERE account_id = ? AND symbol = ?;
+
+deleteByAccountAndSymbol:
+DELETE FROM Position WHERE account_id = ? AND symbol = ?;
