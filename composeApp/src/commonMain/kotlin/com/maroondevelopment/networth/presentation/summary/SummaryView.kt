@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -63,7 +63,7 @@ fun SummaryScreen() {
                                 .padding(8.dp)
                                 .clickable(onClick = {}),
                         painter = painterResource(Res.drawable.add),
-                        colorFilter = ColorFilter.tint(Color.DarkGray),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
                         contentDescription = ""
                     )
 
@@ -74,7 +74,7 @@ fun SummaryScreen() {
                                 .padding(10.dp)
                                 .clickable(onClick = {}),
                         painter = painterResource(Res.drawable.refresh),
-                        colorFilter = ColorFilter.tint(Color.DarkGray),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
                         contentDescription = ""
                     )
                 }

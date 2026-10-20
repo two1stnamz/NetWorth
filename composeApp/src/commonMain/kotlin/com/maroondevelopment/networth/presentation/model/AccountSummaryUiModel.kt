@@ -4,5 +4,6 @@ data class AccountSummaryUiModel(
     val id: Long,
     val title: String,
     val totalValue: String,
-    val valueChange: String
+    val valueChange: String,
+    val isGain: Boolean
 )

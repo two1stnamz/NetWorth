@@ -1,6 +1,5 @@
 package com.maroondevelopment.networth.presentation
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,12 +9,13 @@ import com.maroondevelopment.networth.presentation.account.AccountInfoScreen
 import com.maroondevelopment.networth.presentation.history.PortfolioHistoryScreen
 import com.maroondevelopment.networth.presentation.portfolio.PortfolioScreen
 import com.maroondevelopment.networth.presentation.route.Route
+import com.maroondevelopment.networth.presentation.theme.AppTheme
 
 @Composable
 fun App2() {
     val navController = rememberNavController()
 
-    MaterialTheme {
+    AppTheme {
 
         NavHost(
             navController = navController,

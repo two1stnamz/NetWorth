@@ -14,12 +14,7 @@ fun AccountSnapshot.toLoadedState(
     message: String? = null
 ): AccountInfoUiState.Loaded =
     AccountInfoUiState.Loaded(
-        summary = AccountSummaryUiModel(
-            id = account.id,
-            title = account.name,
-            totalValue = totalValue.roundTo2Decimals().toCurrency(),
-            valueChange = totalValueChange.roundTo2Decimals().toSignedCurrency()
-        ),
+        summary = toSummaryUiModel(),
         positions = assets.map { asset ->
             PositionUiModel(
                 ticker = asset.position.ticker,
@@ -30,7 +25,16 @@ fun AccountSnapshot.toLoadedState(
                 isGain = asset.valueChange >= 0.0
             )
         },
-        isGain = totalValueChange >= 0.0,
         isRefreshing = isRefreshing,
         message = message
+    )
+
+/** The account's own headline figures, shared by the account card and the account screen. */
+fun AccountSnapshot.toSummaryUiModel(): AccountSummaryUiModel =
+    AccountSummaryUiModel(
+        id = account.id,
+        title = account.name,
+        totalValue = totalValue.roundTo2Decimals().toCurrency(),
+        valueChange = totalValueChange.roundTo2Decimals().toSignedCurrency(),
+        isGain = totalValueChange >= 0.0
     )

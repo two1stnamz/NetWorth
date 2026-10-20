@@ -12,7 +12,6 @@ sealed interface AccountInfoUiState {
     data class Loaded(
         val summary: AccountSummaryUiModel,
         val positions: List<PositionUiModel>,
-        val isGain: Boolean = true,
         /** A refresh is in flight over already-visible data. */
         val isRefreshing: Boolean = false,
         /** Transient feedback from the last add / edit / delete attempt. */

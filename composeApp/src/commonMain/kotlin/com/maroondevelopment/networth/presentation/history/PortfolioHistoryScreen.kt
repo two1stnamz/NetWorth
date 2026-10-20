@@ -21,7 +21,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -31,13 +30,12 @@ import com.maroondevelopment.networth.presentation.account.ErrorView
 import com.maroondevelopment.networth.presentation.account.LoadingView
 import com.maroondevelopment.networth.presentation.components.ValueLineChart
 import com.maroondevelopment.networth.presentation.model.PortfolioHistoryUiModel
+import com.maroondevelopment.networth.presentation.theme.appColors
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
-private val GainGreen = Color(0xFF1B873F)
-private val LossRed = Color(0xFFC62828)
 
 @Composable
 fun PortfolioHistoryScreen(
@@ -80,7 +78,7 @@ private fun LoadedView(
                     .padding(top = 16.dp),
             text = "Portfolio value",
             style = MaterialTheme.typography.titleMedium,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
@@ -101,7 +99,7 @@ private fun LoadedView(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
             text = "${model.changeLabel}  ·  ${model.rangeLabel}",
-            color = if (model.isGain) GainGreen else LossRed,
+            color = if (model.isGain) appColors.gain else appColors.loss,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center
         )
@@ -110,7 +108,7 @@ private fun LoadedView(
 
             ValueLineChart(
                 points = model.points,
-                lineColor = if (model.isGain) GainGreen else LossRed,
+                lineColor = if (model.isGain) appColors.gain else appColors.loss,
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -129,13 +127,13 @@ private fun LoadedView(
                 Text(
                     text = model.points.first().dayLabel,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.DarkGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
                     text = model.points.last().dayLabel,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.DarkGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
             }
@@ -176,7 +174,7 @@ private fun ValueStat(label: String, value: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = Color.DarkGray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Text(
@@ -210,7 +208,7 @@ private fun SingleReadingNotice(model: PortfolioHistoryUiModel) {
             modifier = Modifier.padding(top = 4.dp),
             text = "Recorded ${model.rangeLabel}. Refresh your portfolio on another day to start the graph.",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
@@ -249,7 +247,7 @@ private fun EmptyHistoryView(onBack: () -> Unit) {
                 modifier = Modifier.padding(top = 4.dp),
                 text = "Refresh your portfolio to record its value. One value is kept per day.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
@@ -271,7 +269,7 @@ private fun BackRow(onBack: () -> Unit) {
             Icon(
                 modifier = Modifier.size(24.dp),
                 painter = painterResource(Res.drawable.back),
-                tint = Color.DarkGray,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 contentDescription = "Back"
             )
 

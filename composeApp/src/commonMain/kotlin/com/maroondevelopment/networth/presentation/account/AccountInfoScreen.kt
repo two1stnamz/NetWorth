@@ -19,7 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -47,6 +46,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.maroondevelopment.networth.presentation.components.BottomSheet
 import com.maroondevelopment.networth.presentation.model.PositionUiModel
+import com.maroondevelopment.networth.presentation.theme.appColors
 import kotlinx.coroutines.delay
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.add
@@ -58,8 +58,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-private val GainGreen = Color(0xFF1B873F)
-private val LossRed = Color(0xFFC62828)
 private const val MESSAGE_DURATION_MS = 2_500L
 
 @Composable
@@ -204,7 +202,7 @@ private fun LoadedView(
 
         deleteTarget?.let { position ->
 
-            DeleteConfirmationDialog(
+            DeleteConfirmationSheet(
                 position = position,
                 onCancel = { deleteTarget = null },
                 onConfirm = {
@@ -240,7 +238,7 @@ private fun AccountHeader(
                 Icon(
                     modifier = Modifier.size(24.dp),
                     painter = painterResource(Res.drawable.back),
-                    tint = Color.DarkGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = "Back"
                 )
 
@@ -253,7 +251,7 @@ private fun AccountHeader(
                 Icon(
                     modifier = Modifier.size(24.dp),
                     painter = painterResource(Res.drawable.add),
-                    tint = Color.DarkGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = "Add a position"
                 )
 
@@ -267,7 +265,7 @@ private fun AccountHeader(
                 Icon(
                     modifier = Modifier.size(24.dp),
                     painter = painterResource(Res.drawable.refresh),
-                    tint = Color.DarkGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = "Refresh values"
                 )
 
@@ -283,7 +281,7 @@ private fun AccountHeader(
                     .padding(top = 24.dp),
             text = state.summary.title,
             style = MaterialTheme.typography.titleMedium,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
@@ -305,7 +303,7 @@ private fun AccountHeader(
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 12.dp),
             text = state.summary.valueChange,
-            color = if (state.isGain) GainGreen else LossRed,
+            color = if (state.summary.isGain) appColors.gain else appColors.loss,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center
         )
@@ -325,7 +323,7 @@ private fun PositionCard(
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF2F2F2))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
 
         Row(
@@ -349,7 +347,7 @@ private fun PositionCard(
                 Text(
                     text = "${position.unitsLabel} units",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.DarkGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
             }
@@ -366,7 +364,7 @@ private fun PositionCard(
                 Text(
                     text = position.valueChange,
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (position.isGain) GainGreen else LossRed
+                    color = if (position.isGain) appColors.gain else appColors.loss
                 )
 
             }
@@ -376,7 +374,7 @@ private fun PositionCard(
                 Icon(
                     modifier = Modifier.size(20.dp),
                     painter = painterResource(Res.drawable.edit),
-                    tint = Color.DarkGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = "Edit units for ${position.ticker}"
                 )
 
@@ -387,7 +385,7 @@ private fun PositionCard(
                 Icon(
                     modifier = Modifier.size(20.dp),
                     painter = painterResource(Res.drawable.delete),
-                    tint = Color.DarkGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = "Delete ${position.ticker}"
                 )
 
@@ -516,27 +514,57 @@ private fun SheetActions(
 }
 
 @Composable
-private fun DeleteConfirmationDialog(
+private fun DeleteConfirmationSheet(
     position: PositionUiModel,
     onCancel: () -> Unit,
     onConfirm: () -> Unit
 ) {
 
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text("Delete ${position.ticker}?") },
-        text = { Text("${position.unitsLabel} units worth ${position.currentValue} will be removed from this account.") },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("Delete", color = LossRed)
+    BottomSheet {
+
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(25.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            Text(
+                text = "Delete ${position.ticker}?",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = "${position.unitsLabel} units worth ${position.currentValue} will be removed from this account.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+
+                TextButton(onClick = onCancel) {
+                    Text("Cancel")
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                OutlinedButton(
+                    onClick = onConfirm,
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = appColors.loss)
+                ) {
+                    Text("Delete")
+                }
+
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onCancel) {
-                Text("Cancel")
-            }
+
         }
-    )
+
+    }
 }
 
 @Composable
@@ -549,7 +577,7 @@ private fun MessageBanner(message: String) {
                 .padding(horizontal = 20.dp),
         text = message,
         style = MaterialTheme.typography.bodyMedium,
-        color = Color.DarkGray,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center
     )
 }
@@ -576,7 +604,7 @@ private fun EmptyPositions() {
         Text(
             text = "Use + to add the first one.",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
