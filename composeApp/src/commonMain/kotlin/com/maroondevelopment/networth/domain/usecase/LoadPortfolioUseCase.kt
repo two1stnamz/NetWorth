@@ -4,6 +4,7 @@ import com.maroondevelopment.networth.domain.entity.CachePolicy
 import com.maroondevelopment.networth.domain.entity.LoadPortfolioOutcome
 import com.maroondevelopment.networth.domain.entity.v2.AccountSnapshot
 import com.maroondevelopment.networth.domain.entity.v2.LoadAccountSnapshotOutcome
+import com.maroondevelopment.networth.domain.entity.v2.Portfolio
 import com.maroondevelopment.networth.domain.repository.AccountRepository
 
 interface LoadPortfolioUseCase {
@@ -11,6 +12,10 @@ interface LoadPortfolioUseCase {
     suspend operator fun invoke(policy: CachePolicy): LoadPortfolioOutcome
 }
 
+/**
+ * Loads every account, values each one's positions against their quotes, and returns them as a
+ * single [Portfolio] whose totals span the whole holding.
+ */
 class LoadPortfolioUseCaseImpl(
     private val accountRepository: AccountRepository,
     private val loadAccountSnapshot: LoadAccountSnapshotUseCase
@@ -27,6 +32,6 @@ class LoadPortfolioUseCaseImpl(
             }
         }
 
-        return LoadPortfolioOutcome.Success(snapshots)
+        return LoadPortfolioOutcome.Success(Portfolio(snapshots))
     }
 }

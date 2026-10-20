@@ -131,7 +131,7 @@ private fun LoadedView(
                                 .fillMaxWidth()
                                 .padding(horizontal = 25.dp)
                                 .padding(top = 85.dp),
-                        text = "$1,022,450.56",
+                        text = portfolio.totalValue,
                         fontSize = TextUnit(45f, TextUnitType.Sp),
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center

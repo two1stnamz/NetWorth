@@ -30,9 +30,10 @@ class PortfolioViewModel(
 
     fun createNewAccount(name: String) {
         viewModelScope.launch {
-            when (val outcome = createAccount(name)) {
+            when (createAccount(name)) {
                 CreateAccountOutcome.Error -> {}
-                CreateAccountOutcome.Success -> loadPortfolio(policy = CachePolicy.PREFER_CACHE)
+                // Reload so the new account appears without restarting the app.
+                CreateAccountOutcome.Success -> internalLoad(CachePolicy.PREFER_CACHE)
             }
         }
     }
@@ -41,7 +42,8 @@ class PortfolioViewModel(
         viewModelScope.launch {
             when (val outcome = loadPortfolio(cachePolicy)) {
                 LoadPortfolioOutcome.Error -> _flow.value = PortfolioUiState.Error
-                is LoadPortfolioOutcome.Success -> _flow.value = PortfolioUiState.Success(buildPortfolio(outcome.snapshots))
+                is LoadPortfolioOutcome.Success ->
+                    _flow.value = PortfolioUiState.Success(outcome.portfolio.toUiModel())
             }
         }
     }
