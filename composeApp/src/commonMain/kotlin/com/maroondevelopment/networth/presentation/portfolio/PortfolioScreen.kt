@@ -1,6 +1,5 @@
 package com.maroondevelopment.networth.presentation.portfolio
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -42,13 +39,15 @@ import androidx.compose.ui.unit.dp
 import com.maroondevelopment.networth.presentation.account.ErrorView
 import com.maroondevelopment.networth.presentation.account.LoadingView
 import com.maroondevelopment.networth.presentation.components.BottomSheet
+import com.maroondevelopment.networth.presentation.components.FloatingToolbar
+import com.maroondevelopment.networth.presentation.components.TOOLBAR_CONTENT_PADDING
+import com.maroondevelopment.networth.presentation.components.ToolbarAction
 import com.maroondevelopment.networth.presentation.model.AccountSummaryUiModel
 import com.maroondevelopment.networth.presentation.model.PortfolioUiModel
 import com.maroondevelopment.networth.presentation.theme.appColors
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.add
 import networth.composeapp.generated.resources.refresh
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -92,7 +91,7 @@ private fun LoadedView(
                     .fillMaxSize()
                     .padding(top = WindowInsets.safeContent.asPaddingValues().calculateTopPadding()),
             state = state,
-            contentPadding = PaddingValues(bottom = 32.dp),
+            contentPadding = PaddingValues(bottom = TOOLBAR_CONTENT_PADDING),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
@@ -104,40 +103,11 @@ private fun LoadedView(
                             .fillMaxWidth()
                 ) {
 
-                    Row(
-                        modifier =
-                            Modifier
-                                .align(Alignment.TopEnd)
-                    ) {
-
-                        Image(
-                            modifier =
-                                Modifier
-                                    .size(55.dp)
-                                    .padding(8.dp)
-                                    .clickable(onClick = { showModal = true }),
-                            painter = painterResource(Res.drawable.add),
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
-                            contentDescription = ""
-                        )
-
-                        Image(
-                            modifier =
-                                Modifier
-                                    .size(55.dp)
-                                    .padding(10.dp)
-                                    .clickable(onClick = viewModel::refresh),
-                            painter = painterResource(Res.drawable.refresh),
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
-                            contentDescription = ""
-                        )
-                    }
-
                     Text(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .padding(top = 85.dp)
+                                .padding(top = 24.dp, bottom = 12.dp)
                                 .clickable(onClick = onHistorySelected)
                                 .padding(horizontal = 25.dp),
                         text = portfolio.totalValue,
@@ -161,6 +131,22 @@ private fun LoadedView(
             }
 
         }
+
+        FloatingToolbar(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            actions = listOf(
+                ToolbarAction(
+                    icon = Res.drawable.add,
+                    contentDescription = "Add an account",
+                    onClick = { showModal = true }
+                ),
+                ToolbarAction(
+                    icon = Res.drawable.refresh,
+                    contentDescription = "Refresh values",
+                    onClick = viewModel::refresh
+                )
+            )
+        )
 
         if (showModal) {
 

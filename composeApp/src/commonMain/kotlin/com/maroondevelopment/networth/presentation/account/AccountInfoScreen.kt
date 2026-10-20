@@ -45,6 +45,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.maroondevelopment.networth.presentation.components.BottomSheet
+import com.maroondevelopment.networth.presentation.components.FloatingToolbar
+import com.maroondevelopment.networth.presentation.components.TOOLBAR_CONTENT_PADDING
+import com.maroondevelopment.networth.presentation.components.ToolbarAction
 import com.maroondevelopment.networth.presentation.model.PositionUiModel
 import com.maroondevelopment.networth.presentation.theme.appColors
 import kotlinx.coroutines.delay
@@ -119,7 +122,7 @@ private fun LoadedView(
                     .fillMaxSize()
                     .padding(top = WindowInsets.safeContent.asPaddingValues().calculateTopPadding()),
             state = listState,
-            contentPadding = PaddingValues(bottom = 32.dp),
+            contentPadding = PaddingValues(bottom = TOOLBAR_CONTENT_PADDING),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
@@ -127,9 +130,7 @@ private fun LoadedView(
 
                 AccountHeader(
                     state = state,
-                    onBack = onBack,
-                    onRefresh = onRefresh,
-                    onAdd = { showAddSheet = true }
+                    onBack = onBack
                 )
 
             }
@@ -163,6 +164,23 @@ private fun LoadedView(
             }
 
         }
+
+        FloatingToolbar(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            actions = listOf(
+                ToolbarAction(
+                    icon = Res.drawable.add,
+                    contentDescription = "Add a position",
+                    onClick = { showAddSheet = true }
+                ),
+                ToolbarAction(
+                    icon = Res.drawable.refresh,
+                    contentDescription = "Refresh values",
+                    enabled = !state.isRefreshing,
+                    onClick = onRefresh
+                )
+            )
+        )
 
         if (state.isRefreshing) {
 
@@ -219,9 +237,7 @@ private fun LoadedView(
 @Composable
 private fun AccountHeader(
     state: AccountInfoUiState.Loaded,
-    onBack: () -> Unit,
-    onRefresh: () -> Unit,
-    onAdd: () -> Unit
+    onBack: () -> Unit
 ) {
 
     Column(
@@ -240,33 +256,6 @@ private fun AccountHeader(
                     painter = painterResource(Res.drawable.back),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = "Back"
-                )
-
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            IconButton(onClick = onAdd) {
-
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(Res.drawable.add),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    contentDescription = "Add a position"
-                )
-
-            }
-
-            IconButton(
-                onClick = onRefresh,
-                enabled = !state.isRefreshing
-            ) {
-
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(Res.drawable.refresh),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    contentDescription = "Refresh values"
                 )
 
             }
