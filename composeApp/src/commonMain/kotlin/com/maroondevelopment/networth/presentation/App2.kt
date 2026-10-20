@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.maroondevelopment.networth.presentation.account.AccountInfoScreen
+import com.maroondevelopment.networth.presentation.history.PortfolioHistoryScreen
 import com.maroondevelopment.networth.presentation.portfolio.PortfolioScreen
 import com.maroondevelopment.networth.presentation.route.Route
 
@@ -26,7 +27,16 @@ fun App2() {
                 PortfolioScreen(
                     onAccountSelected = { accountId ->
                         navController.navigate(Route.Account(accountId))
-                    }
+                    },
+                    onHistorySelected = { navController.navigate(Route.History) }
+                )
+
+            }
+
+            composable<Route.History> {
+
+                PortfolioHistoryScreen(
+                    onBack = { navController.popBackStack() }
                 )
 
             }

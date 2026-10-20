@@ -4,16 +4,20 @@ import com.maroondevelopment.networth.data.datasource.AccountDataSource
 import com.maroondevelopment.networth.data.datasource.AccountDataSourceImpl
 import com.maroondevelopment.networth.data.datasource.LocalQuoteDataSource
 import com.maroondevelopment.networth.data.datasource.LocalQuoteDataSourceImpl
+import com.maroondevelopment.networth.data.datasource.PortfolioValueDataSource
+import com.maroondevelopment.networth.data.datasource.PortfolioValueDataSourceImpl
 import com.maroondevelopment.networth.data.datasource.PositionDataSource
 import com.maroondevelopment.networth.data.datasource.PositionDataSourceImpl
 import com.maroondevelopment.networth.data.datasource.RemoteQuoteDataSource
 import com.maroondevelopment.networth.data.datasource.RemoteQuoteDataSourceImpl
 import com.maroondevelopment.networth.data.repository.AccountRepositoryImpl
 import com.maroondevelopment.networth.data.repository.HoldingsRepositoryImpl
+import com.maroondevelopment.networth.data.repository.PortfolioHistoryRepositoryImpl
 import com.maroondevelopment.networth.data.repository.PositionRepositoryImpl
 import com.maroondevelopment.networth.data.repository.QuoteRepositoryImpl
 import com.maroondevelopment.networth.domain.repository.AccountRepository
 import com.maroondevelopment.networth.domain.repository.HoldingsRepository
+import com.maroondevelopment.networth.domain.repository.PortfolioHistoryRepository
 import com.maroondevelopment.networth.domain.repository.PositionRepository
 import com.maroondevelopment.networth.domain.repository.QuoteRepository
 import com.maroondevelopment.networth.domain.usecase.AddPositionToAccountUseCase
@@ -26,13 +30,22 @@ import com.maroondevelopment.networth.domain.usecase.FetchPortfolioUseCase
 import com.maroondevelopment.networth.domain.usecase.LoadAccountSnapshotUseCase
 import com.maroondevelopment.networth.domain.usecase.LoadAccountSnapshotUseCaseImpl
 import com.maroondevelopment.networth.domain.usecase.LoadPortfolioUseCase
+import com.maroondevelopment.networth.domain.usecase.LoadPortfolioHistoryUseCase
+import com.maroondevelopment.networth.domain.usecase.LoadPortfolioHistoryUseCaseImpl
 import com.maroondevelopment.networth.domain.usecase.LoadPortfolioUseCaseImpl
+import com.maroondevelopment.networth.domain.usecase.RecordPortfolioValueUseCase
+import com.maroondevelopment.networth.domain.usecase.RecordPortfolioValueUseCaseImpl
+import com.maroondevelopment.networth.domain.usecase.RefreshPortfolioUseCase
+import com.maroondevelopment.networth.domain.usecase.RefreshPortfolioUseCaseImpl
 import com.maroondevelopment.networth.domain.usecase.UpdatePositionUnitsUseCase
 import com.maroondevelopment.networth.domain.usecase.UpdatePositionUnitsUseCaseImpl
+import com.maroondevelopment.networth.data.time.SystemTimeProvider
+import com.maroondevelopment.networth.domain.time.TimeProvider
 import com.maroondevelopment.networth.persistence.DriverFactory
 import com.maroondevelopment.networth.persistence.createDatabase
 import com.maroondevelopment.networth.presentation.SnapshotViewModel
 import com.maroondevelopment.networth.presentation.account.AccountInfoViewModel
+import com.maroondevelopment.networth.presentation.history.PortfolioHistoryViewModel
 import com.maroondevelopment.networth.presentation.portfolio.PortfolioViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -53,6 +66,7 @@ fun appModule(driverFactory: DriverFactory): Module = module {
     // Data sources
     single<AccountDataSource> { AccountDataSourceImpl(get()) }
     single<PositionDataSource> { PositionDataSourceImpl(get()) }
+    single<PortfolioValueDataSource> { PortfolioValueDataSourceImpl(get()) }
     single<LocalQuoteDataSource> { LocalQuoteDataSourceImpl(get()) }
     single<RemoteQuoteDataSource> { RemoteQuoteDataSourceImpl() }
 
@@ -61,11 +75,18 @@ fun appModule(driverFactory: DriverFactory): Module = module {
     single<HoldingsRepository> { HoldingsRepositoryImpl() }
     single<AccountRepository> { AccountRepositoryImpl(get()) }
     single<PositionRepository> { PositionRepositoryImpl(get()) }
+    single<PortfolioHistoryRepository> { PortfolioHistoryRepositoryImpl(get()) }
+
+    // Time
+    single<TimeProvider> { SystemTimeProvider() }
 
     // Use cases
     factory { FetchPortfolioUseCase(get(), get()) }
     factory<LoadAccountSnapshotUseCase> { LoadAccountSnapshotUseCaseImpl(get(), get(), get()) }
     factory<LoadPortfolioUseCase> { LoadPortfolioUseCaseImpl(get(), get()) }
+    factory<RecordPortfolioValueUseCase> { RecordPortfolioValueUseCaseImpl(get(), get()) }
+    factory<RefreshPortfolioUseCase> { RefreshPortfolioUseCaseImpl(get(), get()) }
+    factory<LoadPortfolioHistoryUseCase> { LoadPortfolioHistoryUseCaseImpl(get()) }
     factory<CreateAccountUseCase> { CreateAccountUseCaseImpl(get()) }
     factory<AddPositionToAccountUseCase> { AddPositionToAccountUseCaseImpl(get(), get(), get()) }
     factory<UpdatePositionUnitsUseCase> { UpdatePositionUnitsUseCaseImpl(get(), get()) }
@@ -73,6 +94,7 @@ fun appModule(driverFactory: DriverFactory): Module = module {
 
     // View models
     viewModelOf(::PortfolioViewModel)
+    viewModelOf(::PortfolioHistoryViewModel)
     // The account id comes from the nav route, so it is passed in rather than resolved.
     viewModel { parameters ->
         AccountInfoViewModel(parameters.get(), get(), get(), get(), get())

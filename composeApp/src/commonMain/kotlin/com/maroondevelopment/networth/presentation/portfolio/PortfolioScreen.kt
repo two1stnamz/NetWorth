@@ -51,6 +51,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun PortfolioScreen(
     onAccountSelected: (Long) -> Unit,
+    onHistorySelected: () -> Unit,
     viewModel: PortfolioViewModel = koinViewModel()
 ) {
 
@@ -61,7 +62,8 @@ fun PortfolioScreen(
     when (val uiStateUpdate = viewModel.flow.collectAsState().value) {
         PortfolioUiState.Error -> ErrorView()
         PortfolioUiState.Loading -> LoadingView()
-        is PortfolioUiState.Success -> LoadedView(uiStateUpdate.model, onAccountSelected, viewModel)
+        is PortfolioUiState.Success ->
+            LoadedView(uiStateUpdate.model, onAccountSelected, onHistorySelected, viewModel)
     }
 
 }
@@ -70,6 +72,7 @@ fun PortfolioScreen(
 private fun LoadedView(
     portfolio: PortfolioUiModel,
     onAccountSelected: (Long) -> Unit,
+    onHistorySelected: () -> Unit,
     viewModel: PortfolioViewModel
 ) {
 
@@ -118,7 +121,7 @@ private fun LoadedView(
                                 Modifier
                                     .size(55.dp)
                                     .padding(10.dp)
-                                    .clickable(onClick = {}),
+                                    .clickable(onClick = viewModel::refresh),
                             painter = painterResource(Res.drawable.refresh),
                             colorFilter = ColorFilter.tint(Color.DarkGray),
                             contentDescription = ""
@@ -129,8 +132,9 @@ private fun LoadedView(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 25.dp)
-                                .padding(top = 85.dp),
+                                .padding(top = 85.dp)
+                                .clickable(onClick = onHistorySelected)
+                                .padding(horizontal = 25.dp),
                         text = portfolio.totalValue,
                         fontSize = TextUnit(45f, TextUnitType.Sp),
                         fontWeight = FontWeight.Bold,

@@ -68,6 +68,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             // Navigation
             implementation(libs.navigation.compose)
+            // Kotlinx DateTime (Multiplatform)
+            implementation(libs.kotlinx.datetime)
             // Kotlinx Serialization (Multiplatform)
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.kotlinx.serialization.json)

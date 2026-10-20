@@ -9,4 +9,7 @@ sealed interface Route {
 
     @Serializable
     data class Account(val id: Long) : Route
+
+    @Serializable
+    data object History : Route
 }

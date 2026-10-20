@@ -1,0 +1,20 @@
+-- One recorded portfolio total per calendar day. `day` is the primary key, so a second
+-- refresh on the same day replaces that day's value rather than adding a point.
+CREATE TABLE PortfolioValue (
+    day TEXT NOT NULL PRIMARY KEY,
+    recorded_at INTEGER NOT NULL,
+    total_value REAL NOT NULL
+);
+
+insertOrReplace:
+INSERT OR REPLACE INTO PortfolioValue (day, recorded_at, total_value)
+VALUES (?, ?, ?);
+
+selectAll:
+SELECT * FROM PortfolioValue ORDER BY day ASC;
+
+selectLatest:
+SELECT * FROM PortfolioValue ORDER BY day DESC LIMIT 1;
+
+deleteAll:
+DELETE FROM PortfolioValue;
