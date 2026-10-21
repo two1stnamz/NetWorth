@@ -1,6 +1,7 @@
 package com.maroondevelopment.networth.presentation.account
 
 import com.maroondevelopment.networth.domain.entity.v2.AccountSnapshot
+import com.maroondevelopment.networth.domain.entity.v2.Asset
 import com.maroondevelopment.networth.presentation.model.AccountSummaryUiModel
 import com.maroondevelopment.networth.presentation.model.PositionUiModel
 import com.maroondevelopment.networth.util.roundTo2Decimals
@@ -15,19 +16,36 @@ fun AccountSnapshot.toLoadedState(
 ): AccountInfoUiState.Loaded =
     AccountInfoUiState.Loaded(
         summary = toSummaryUiModel(),
-        positions = assets.map { asset ->
-            PositionUiModel(
-                ticker = asset.position.ticker,
-                units = asset.position.units,
-                unitsLabel = asset.position.units.toUnitsLabel(),
-                currentValue = asset.value.roundTo2Decimals().toCurrency(),
-                valueChange = asset.valueChange.roundTo2Decimals().toSignedCurrency(),
-                isGain = asset.valueChange >= 0.0
-            )
-        },
+        positions = assets.map { asset -> asset.toUiModel() },
         isRefreshing = isRefreshing,
         message = message
     )
+
+/**
+ * Renders one valued [Asset] as a position card.
+ *
+ * The heading is the instrument's name where the quote carried one, and the ticker otherwise; the
+ * detail line drops the ticker when it is already the heading rather than printing it twice.
+ */
+private fun Asset.toUiModel(): PositionUiModel {
+    val heading = quote.name ?: position.ticker
+    val unitsLabel = position.units.toUnitsLabel()
+
+    return PositionUiModel(
+        ticker = position.ticker,
+        displayName = heading,
+        units = position.units,
+        unitsLabel = unitsLabel,
+        detail = listOfNotNull(
+            position.ticker.takeIf { it != heading },
+            "$unitsLabel units",
+            quote.price.roundTo2Decimals().toCurrency()
+        ).joinToString(" · "),
+        currentValue = value.roundTo2Decimals().toCurrency(),
+        valueChange = valueChange.roundTo2Decimals().toSignedCurrency(),
+        isGain = valueChange >= 0.0
+    )
+}
 
 /** The account's own headline figures, shared by the account card and the account screen. */
 fun AccountSnapshot.toSummaryUiModel(): AccountSummaryUiModel =

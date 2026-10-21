@@ -6,6 +6,7 @@ import com.maroondevelopment.networth.domain.entity.v2.LoadAccountSnapshotOutcom
 import com.maroondevelopment.networth.domain.entity.v2.NewPosition
 import com.maroondevelopment.networth.domain.repository.PositionRepository
 import com.maroondevelopment.networth.domain.repository.QuoteRepository
+import com.maroondevelopment.networth.util.roundTo4Decimals
 
 interface AddPositionToAccountUseCase {
 
@@ -13,8 +14,9 @@ interface AddPositionToAccountUseCase {
 }
 
 /**
- * Adds a position to an account, rejecting input the account cannot hold: blank tickers,
- * non-positive units, a ticker the account already holds, and tickers with no tradeable quote.
+ * Adds a position to an account, rejecting input the account cannot hold: blank tickers, units
+ * that are not positive once rounded to four decimal places, a ticker the account already
+ * holds, and tickers with no tradeable quote.
  *
  * On success the freshly loaded snapshot comes back, so the caller never has to re-derive state.
  */
@@ -26,8 +28,11 @@ class AddPositionToAccountUseCaseImpl(
 
     override suspend fun invoke(accountId: Long, position: NewPosition): AddPositionOutcome {
         val ticker = position.ticker.trim().uppercase()
+        // Rounded before it is checked, so units that round away to nothing are rejected rather
+        // than stored as a zero-unit holding.
+        val units = position.units.roundTo4Decimals()
 
-        if (ticker.isEmpty() || position.units <= 0.0) {
+        if (ticker.isEmpty() || units <= 0.0) {
             return AddPositionOutcome.Failure.InvalidInput
         }
 
@@ -47,7 +52,7 @@ class AddPositionToAccountUseCaseImpl(
 
             positionRepository.addPositionsForAccount(
                 accountId = accountId,
-                positions = listOf(NewPosition(ticker = ticker, units = position.units))
+                positions = listOf(NewPosition(ticker = ticker, units = units))
             )
 
             when (val outcome = loadAccountSnapshot(accountId, CachePolicy.PREFER_CACHE)) {

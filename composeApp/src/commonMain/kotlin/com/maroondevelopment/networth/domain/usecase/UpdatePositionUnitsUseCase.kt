@@ -5,6 +5,7 @@ import com.maroondevelopment.networth.domain.entity.v2.LoadAccountSnapshotOutcom
 import com.maroondevelopment.networth.domain.entity.v2.NewPosition
 import com.maroondevelopment.networth.domain.entity.v2.UpdatePositionOutcome
 import com.maroondevelopment.networth.domain.repository.PositionRepository
+import com.maroondevelopment.networth.util.roundTo4Decimals
 
 interface UpdatePositionUnitsUseCase {
 
@@ -18,8 +19,9 @@ interface UpdatePositionUnitsUseCase {
 /**
  * Changes how many units of a ticker an account holds.
  *
- * Units must be positive — zeroing out a holding is a delete, not an edit — and the account must
- * already hold the ticker, so a stale card cannot resurrect a position someone else removed.
+ * Units are rounded to the four decimal places holdings are kept at, then must still be
+ * positive — zeroing out a holding is a delete, not an edit — and the account must already
+ * hold the ticker, so a stale card cannot resurrect a position someone else removed.
  */
 class UpdatePositionUnitsUseCaseImpl(
     private val positionRepository: PositionRepository,
@@ -31,7 +33,11 @@ class UpdatePositionUnitsUseCaseImpl(
         ticker: String,
         units: Double
     ): UpdatePositionOutcome {
-        if (units <= 0.0) return UpdatePositionOutcome.Failure.InvalidInput
+        // Rounded before it is checked, so units that round away to nothing are rejected rather
+        // than stored as a zero-unit holding.
+        val roundedUnits = units.roundTo4Decimals()
+
+        if (roundedUnits <= 0.0) return UpdatePositionOutcome.Failure.InvalidInput
 
         return try {
             val held = positionRepository.getPositionsForAccount(accountId)
@@ -40,7 +46,7 @@ class UpdatePositionUnitsUseCaseImpl(
 
             positionRepository.updatePositionForAccount(
                 accountId = accountId,
-                position = NewPosition(ticker = held.ticker, units = units)
+                position = NewPosition(ticker = held.ticker, units = roundedUnits)
             )
 
             when (val outcome = loadAccountSnapshot(accountId, CachePolicy.PREFER_CACHE)) {

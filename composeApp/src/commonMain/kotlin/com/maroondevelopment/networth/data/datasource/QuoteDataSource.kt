@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
 interface LocalQuoteDataSource {
@@ -39,7 +40,8 @@ class LocalQuoteDataSourceImpl(
                 quote = QuoteDto(
                     ticker = this.symbol,
                     price = this.price,
-                    change = this.change
+                    change = this.change,
+                    name = this.name
                 )
             }
         } catch (t: Throwable) {
@@ -51,7 +53,12 @@ class LocalQuoteDataSourceImpl(
 
     override suspend fun storeQuote(quote: QuoteDto) {
         try {
-            database.quoteQueries.insertOrReplace(quote.ticker, quote.price, quote.change)
+            database.quoteQueries.insertOrReplace(
+                symbol = quote.ticker,
+                price = quote.price,
+                change = quote.change,
+                name = quote.name
+            )
         } catch (t: Throwable) {
             println("[BENG][LocalQuoteDataSource] storeQuote() - EXCEPTION!!! ${t.message}")
         }
@@ -83,7 +90,14 @@ class RemoteQuoteDataSourceImpl : RemoteQuoteDataSource {
                         val symbol = quoteJson["symbol"]?.jsonPrimitive?.content ?: return@let
                         val price = quoteJson["last"]?.jsonPrimitive?.doubleOrNull ?: 0.0
                         val change = quoteJson["change"]?.jsonPrimitive?.doubleOrNull ?: 0.0
-                        result[symbol] = QuoteDto(ticker = symbol, price = price, change = change)
+                        val name = quoteJson["onAirName"]?.jsonPrimitive?.contentOrNull
+                            ?: quoteJson["name"]?.jsonPrimitive?.contentOrNull
+                        result[symbol] = QuoteDto(
+                            ticker = symbol,
+                            price = price,
+                            change = change,
+                            name = name?.takeIf { it.isNotBlank() }
+                        )
                     }
                 }
             } else {

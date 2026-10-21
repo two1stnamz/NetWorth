@@ -1,12 +1,15 @@
+-- `name` is the instrument's display name, as CNBC reports it alongside the price. It is
+-- nullable because not every symbol the service answers for carries one.
 CREATE TABLE quote (
     symbol TEXT NOT NULL PRIMARY KEY,
     price REAL NOT NULL,
-    change REAL NOT NULL
+    change REAL NOT NULL,
+    name TEXT
 );
 
 insertOrReplace:
-INSERT OR REPLACE INTO quote (symbol, price, change)
-VALUES (?, ?, ?);
+INSERT OR REPLACE INTO quote (symbol, price, change, name)
+VALUES (?, ?, ?, ?);
 
 selectAll:
 SELECT * FROM quote;

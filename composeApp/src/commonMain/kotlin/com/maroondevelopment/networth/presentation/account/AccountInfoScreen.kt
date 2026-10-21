@@ -19,7 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,7 +44,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -58,8 +62,7 @@ import kotlinx.coroutines.delay
 import networth.composeapp.generated.resources.Res
 import networth.composeapp.generated.resources.add
 import networth.composeapp.generated.resources.back
-import networth.composeapp.generated.resources.delete
-import networth.composeapp.generated.resources.edit
+import networth.composeapp.generated.resources.close
 import networth.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -104,7 +107,7 @@ private fun LoadedView(
 
     val listState = rememberLazyListState()
     var showAddSheet by remember { mutableStateOf(false) }
-    var editTarget by remember { mutableStateOf<PositionUiModel?>(null) }
+    var selectedPosition by remember { mutableStateOf<PositionUiModel?>(null) }
     var deleteTarget by remember { mutableStateOf<PositionUiModel?>(null) }
 
     LaunchedEffect(state.message) {
@@ -157,8 +160,7 @@ private fun LoadedView(
 
                     PositionCard(
                         position = position,
-                        onEdit = { editTarget = position },
-                        onDelete = { deleteTarget = position }
+                        onClick = { selectedPosition = position }
                     )
 
                 }
@@ -207,14 +209,18 @@ private fun LoadedView(
 
         }
 
-        editTarget?.let { position ->
+        selectedPosition?.let { position ->
 
-            EditUnitsSheet(
+            PositionSheet(
                 position = position,
-                onCancel = { editTarget = null },
-                onConfirm = { units ->
-                    editTarget = null
+                onDismiss = { selectedPosition = null },
+                onSave = { units ->
+                    selectedPosition = null
                     onUpdateUnits(position.ticker, units)
+                },
+                onDelete = {
+                    selectedPosition = null
+                    deleteTarget = position
                 }
             )
 
@@ -305,11 +311,11 @@ private fun AccountHeader(
 @Composable
 private fun PositionCard(
     position: PositionUiModel,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onClick: () -> Unit
 ) {
 
     Card(
+        onClick = onClick,
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -321,22 +327,27 @@ private fun PositionCard(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = 12.dp, end = 4.dp, bottom = 12.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
             ) {
 
                 Text(
-                    text = position.ticker,
+                    text = position.displayName,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Text(
-                    text = "${position.unitsLabel} units",
+                    text = position.detail,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -349,35 +360,14 @@ private fun PositionCard(
 
                 Text(
                     text = position.currentValue,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1
                 )
 
                 Text(
                     text = position.valueChange,
                     style = MaterialTheme.typography.bodySmall,
                     color = if (position.isGain) appColors.gain else appColors.loss
-                )
-
-            }
-
-            IconButton(onClick = onEdit) {
-
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(Res.drawable.edit),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    contentDescription = "Edit units for ${position.ticker}"
-                )
-
-            }
-
-            IconButton(onClick = onDelete) {
-
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(Res.drawable.delete),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    contentDescription = "Delete ${position.ticker}"
                 )
 
             }
@@ -423,7 +413,10 @@ private fun AddPositionSheet(
                 modifier = Modifier.fillMaxWidth(),
                 state = unitsState,
                 label = { Text("Units") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Done
+                )
             )
 
             SheetActions(
@@ -439,16 +432,24 @@ private fun AddPositionSheet(
     }
 }
 
+/**
+ * The actions for one held position: change its units, or delete it.
+ *
+ * Opened by tapping the position's card, and closed by the X, by a tap outside, or by either
+ * action. Delete hands off to [DeleteConfirmationSheet] rather than removing the position
+ * outright, since it cannot be undone.
+ */
 @Composable
-private fun EditUnitsSheet(
+private fun PositionSheet(
     position: PositionUiModel,
-    onCancel: () -> Unit,
-    onConfirm: (units: String) -> Unit
+    onDismiss: () -> Unit,
+    onSave: (units: String) -> Unit,
+    onDelete: () -> Unit
 ) {
 
     val unitsState = rememberTextFieldState(position.unitsLabel)
 
-    BottomSheet {
+    BottomSheet(onDismissRequest = onDismiss) {
 
         Column(
             modifier =
@@ -458,24 +459,67 @@ private fun EditUnitsSheet(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            Text(
-                text = "Edit ${position.ticker}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+
+                    Text(
+                        text = position.displayName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = position.ticker,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                }
+
+                IconButton(onClick = onDismiss) {
+
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(Res.drawable.close),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentDescription = "Close"
+                    )
+
+                }
+
+            }
 
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 state = unitsState,
                 label = { Text("Units") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                lineLimits = TextFieldLineLimits.SingleLine,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Done
+                )
             )
 
-            SheetActions(
-                confirmLabel = "Save",
-                onCancel = onCancel,
-                onConfirm = { onConfirm(unitsState.text.toString()) }
-            )
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onSave(unitsState.text.toString()) }
+            ) {
+                Text("Save")
+            }
+
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onDelete,
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = appColors.loss)
+            ) {
+                Text("Delete")
+            }
 
         }
 
@@ -525,7 +569,7 @@ private fun DeleteConfirmationSheet(
         ) {
 
             Text(
-                text = "Delete ${position.ticker}?",
+                text = "Delete ${position.displayName}?",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )

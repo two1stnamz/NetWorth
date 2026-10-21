@@ -17,18 +17,18 @@ class QuoteRepositoryImpl(
             CachePolicy.PREFER_CACHE -> {
                 val quoteDto = localDataSource.getQuote(symbol)
 
-                return quoteDto?.toEntity()
-                    ?: remoteDataSource.getQuote(symbol)?.toEntity()?.also {
-                        localDataSource.storeQuote(QuoteDto(symbol, it.price, it.valueChange))
-                    }
+                if (quoteDto != null) return quoteDto.toEntity()
+
+                val fetched = remoteDataSource.getQuote(symbol) ?: return null
+                localDataSource.storeQuote(fetched)
+
+                return fetched.toEntity()
             }
             CachePolicy.REFRESH -> {
-                val quoteDto = remoteDataSource.getQuote(symbol)
-                val quote = quoteDto?.toEntity()?.also {
-                    localDataSource.storeQuote(QuoteDto(symbol, it.price, it.valueChange))
-                }
+                val quoteDto = remoteDataSource.getQuote(symbol) ?: return null
+                localDataSource.storeQuote(quoteDto)
 
-                return quote
+                return quoteDto.toEntity()
             }
         }
     }
@@ -53,9 +53,7 @@ class QuoteRepositoryImpl(
 
                 if (cacheMisses.isNotEmpty()) {
                     remoteDataSource.getQuotes(cacheMisses).forEach { (symbol, dto) ->
-                        result[symbol] = dto?.toEntity()?.also {
-                            localDataSource.storeQuote(QuoteDto(symbol, it.price, it.valueChange))
-                        }
+                        result[symbol] = dto?.also { localDataSource.storeQuote(it) }?.toEntity()
                     }
                 }
 
@@ -64,9 +62,7 @@ class QuoteRepositoryImpl(
             CachePolicy.REFRESH -> {
                 val result = mutableMapOf<String, Quote?>()
                 remoteDataSource.getQuotes(symbols).forEach { (symbol, dto) ->
-                    result[symbol] = dto?.toEntity()?.also {
-                        localDataSource.storeQuote(QuoteDto(symbol, it.price, it.valueChange))
-                    }
+                    result[symbol] = dto?.also { localDataSource.storeQuote(it) }?.toEntity()
                 }
                 result
             }
@@ -77,7 +73,8 @@ class QuoteRepositoryImpl(
         return Quote(
             symbol = this.ticker,
             price = this.price,
-            valueChange = this.change
+            valueChange = this.change,
+            name = this.name
         )
     }
 }
