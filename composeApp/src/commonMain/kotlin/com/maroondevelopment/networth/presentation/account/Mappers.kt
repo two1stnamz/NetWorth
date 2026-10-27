@@ -36,11 +36,6 @@ private fun Asset.toUiModel(): PositionUiModel {
         displayName = heading,
         units = position.units,
         unitsLabel = unitsLabel,
-        detail = listOfNotNull(
-            position.ticker.takeIf { it != heading },
-            "$unitsLabel units",
-            quote.price.roundTo2Decimals().toCurrency()
-        ).joinToString(" · "),
         currentValue = value.roundTo2Decimals().toCurrency(),
         valueChange = valueChange.roundTo2Decimals().toSignedCurrency(),
         isGain = valueChange >= 0.0

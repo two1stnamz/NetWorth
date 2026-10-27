@@ -347,18 +347,6 @@ private fun PositionCard(
                 )
 
                 Text(
-                    text = position.detail,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-            }
-
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-
-                Text(
                     text = position.currentValue,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1
@@ -371,7 +359,6 @@ private fun PositionCard(
                 )
 
             }
-
         }
 
     }
